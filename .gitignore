@@ -14,4 +14,4 @@ wheels/
 # macOS specific files
 .DS_Store
 artifacts/metadata_chunk.json
-experiments/artifacts/metadata_chunk.json
+experiments/
