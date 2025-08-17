@@ -8,7 +8,7 @@ if str(ROOT) not in sys.path:
     
 from fastapi import FastAPI
 from pydantic import BaseModel
-from agentic_rag.rag import get_rag_response, get_relevant_chunks
+from agentic_rag.rag_rerank import get_rag_response, get_relevant_chunks_with_reranking
 from agentic_rag.crew import AgenticRag # Import AgenticRag
 
 app = FastAPI()
@@ -28,8 +28,8 @@ async def crewai_endpoint(query: Query):
     return response
 
 @app.post("/relevant_chunks")
-async def relevant_chunks_endpointt_chunks(query: Query):
-    return await get_relevant_chunks(query.query)
+async def relevant_chunks_endpoint_chunks(query: Query):
+    return await get_relevant_chunks_with_reranking(query.query)
 
 if __name__ == "__main__":
     import uvicorn

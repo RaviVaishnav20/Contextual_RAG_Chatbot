@@ -9,7 +9,7 @@ if str(ROOT) not in sys.path:
 from crewai.project import CrewBase, agent, task, crew
 from crewai_tools import SerperDevTool
 from crewai import Agent, Task, Crew, Process
-from agentic_rag.tools.custom_tools import CustomRAGTool
+from agentic_rag.tools.custom_tools_rerank import CustomRAGTool
 from config.config_manager import ConfigManager
 from langchain_ollama import ChatOllama
 import os
@@ -20,8 +20,8 @@ os.getenv("SERPER_API_KEY")
 llm = ChatOllama(
     model=f"ollama/gemma3", base_url=os.getenv("OLLAMA_HOST", "http://localhost:11434")
 )
-config_path = ROOT/"config"/"config.yaml"
-config = ConfigManager(config_path)
+# config_path = ROOT/"config"/"config.yaml"
+config = ConfigManager()
 rag_tool = CustomRAGTool(config)
 web_search_tool = SerperDevTool()
 
@@ -46,7 +46,7 @@ class AgenticRag:
                 web_search_tool
             ],
             llm=llm,
-            max_retry_limit=2,
+            max_retry_limit=1,
             max_iter=2
         )
     
@@ -56,8 +56,8 @@ class AgenticRag:
             config=self.agents_config['response_synthesizer_agent'],
             verbose=True,
             llm=llm,
-            max_retry_limit=2,
-            max_iter=2
+            max_retry_limit=1,
+            max_iter=1
         )
     
     @task
@@ -85,6 +85,10 @@ class AgenticRag:
     
     def run_crew_with_context(self, query: str) -> dict:
         """Runs the AgenticRag crew and returns the retrieved context and final response."""
+        if isinstance(query, dict) and 'description' in query:
+            query_string = query['description']
+        else:
+            query_string = str(query)
         inputs = {'query': query}
         final_response = self.crew().kickoff(inputs=inputs)
         retrieved_context = self.rag_tool_instance.get_last_retrieved_chunks()

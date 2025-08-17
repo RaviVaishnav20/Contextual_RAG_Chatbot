@@ -97,7 +97,7 @@ def generate_content(provider: str, model_name: str, prompt: str) -> str:
             "model": model_name,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False
-        })
+        }, timeout=120)
         response.raise_for_status()
         return response.json().get("message", {}).get("content", "").strip()
     else:
@@ -106,7 +106,7 @@ def generate_content(provider: str, model_name: str, prompt: str) -> str:
 def get_embedding(text: str) -> np.ndarray:
     """Get embedding for text using local Ollama API"""
     try:
-        response = requests.post(EMBED_URL, json={"model": EMBED_MODEL, "prompt": text})
+        response = requests.post(EMBED_URL, json={"model": EMBED_MODEL, "prompt": text}, timeout=120)
         response.raise_for_status()
         return np.array(response.json()["embedding"], dtype=np.float32)
     except requests.exceptions.RequestException as e:

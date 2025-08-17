@@ -40,7 +40,7 @@ class CustomRAGTool(BaseTool):
         else:
             query_string = str(query)
         try:
-            response = query_embeddings(self.index, query, self.config)
+            response = query_embeddings(self.index, query_string, self.config)
             
             if response and response.source_nodes:
                 retrieved_chunks_list = []
