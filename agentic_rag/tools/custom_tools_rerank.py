@@ -26,12 +26,12 @@ class CustomRAGTool(BaseTool):
     
     _last_retrieved_chunks: str = ""
 
-    def __init__(self, config: ConfigManager, rerank_model: str = "llama3.1:8b"):
+    def __init__(self, config: ConfigManager):
         super().__init__()
         self.config = config
         setup_ollama_embeddings(config)
         self.index = load_existing_index(config)
-        self.reranker = OllamaReRanker(rerank_model)
+        self.reranker = OllamaReRanker()
     
     def _run(self, query: str) -> str:
         """Search with re-ranking."""

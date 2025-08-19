@@ -45,7 +45,7 @@ async def get_rag_response(user_query: str):
     try:
         llm_response = generate_content(
             provider=primary_model.get('provider', 'ollama'),
-            model_name=primary_model.get('model_name', 'llama3.1:8b'),
+            model_name=primary_model.get('model_name', 'llama3:8b'),
             prompt=prompt
         )
     except Exception as e:

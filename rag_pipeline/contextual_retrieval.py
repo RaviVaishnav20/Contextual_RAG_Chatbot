@@ -62,7 +62,7 @@ Combined Succinct Context:
     try:
         summarized_context = generate_content(
             provider=primary.get('provider', 'ollama'),
-            model_name=primary.get('model_name', 'llama3.1:8b'),
+            model_name=primary.get('model_name', 'llama3:8b'),
             prompt=summarization_prompt
         )
         signal.alarm(0)  # Cancel timeout
@@ -139,7 +139,7 @@ Please give a short succinct context to situate this chunk within the overall do
             try:
                 context_for_segment = generate_content(
                     provider=primary.get('provider', 'ollama'),
-                    model_name=primary.get('model_name', 'llama3.1:8b'),
+                    model_name=primary.get('model_name', 'llama3:8b'),
                     prompt=segment_formatted_prompt
                 )
                 signal.alarm(0)  # Cancel timeout
@@ -192,7 +192,7 @@ Please give a short succinct context to situate this chunk within the overall do
         try:
             final_context = generate_content(
                 provider=primary.get('provider', 'ollama'),
-                model_name=primary.get('model_name', 'llama3.1:8b'),
+                model_name=primary.get('model_name', 'llama3:8b'),
                 prompt=formatted_prompt
             )
             signal.alarm(0)  # Cancel timeout

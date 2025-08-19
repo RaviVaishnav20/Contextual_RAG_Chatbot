@@ -1,13 +1,17 @@
 import requests
 from typing import List, Tuple
 import re
-
+from config.config_manager import ConfigManager
+import os
 class OllamaReRanker:
     """Simple Ollama-based re-ranker for RAG pipeline"""
     
-    def __init__(self, model_name: str = "llama3.1:8b", base_url: str = "http://localhost:11434"):
-        self.model_name = model_name
-        self.base_url = base_url.rstrip('/')
+    def __init__(self):
+        # Step 1: Get more chunks initially
+        config = ConfigManager()
+        reranker_config = config.get_reranker_config()
+        self.model_name = reranker_config.get('model_name', "gemma3")
+        self.base_url = config.get_ollama_host().rstrip('/')
     
     def _call_ollama(self, prompt: str) -> str:
         """Call Ollama API"""

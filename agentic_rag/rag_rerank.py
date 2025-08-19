@@ -76,11 +76,18 @@ async def get_rag_response(user_query: str, initial_k: int = 15, final_k: int = 
     try:
         llm_response = generate_content(
             provider=primary_model.get('provider', 'ollama'),
-            model_name=primary_model.get('model_name', 'llama3.1:8b'),
+            model_name=primary_model.get('model_name', 'llama3:8b'),
             prompt=prompt
         )
     except Exception as e:
-        llm_response = f"Error: {str(e)}"
+        try:
+            llm_response = generate_content(
+            provider=primary_model.get('fallback_provider', 'ollama'),
+            model_name=primary_model.get('fallback_model_name', 'llama3:8b'),
+            prompt=prompt
+        )
+        except Exception as e:
+            llm_response = f"Error: {str(e)}"
     
     return {"retrieved_text": retrieved_text, "llm_response": llm_response}
 

@@ -14,14 +14,15 @@ from config.config_manager import ConfigManager
 from langchain_ollama import ChatOllama
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
+config = ConfigManager()
+crewai_config = config.get_crewai_config()
+model_name = crewai_config.get('model_name', "gemma3")
 os.getenv("SERPER_API_KEY")
 llm = ChatOllama(
-    model=f"ollama/gemma3", base_url=os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    model=f"ollama/{model_name}", base_url=config.get_ollama_host()
 )
-# config_path = ROOT/"config"/"config.yaml"
-config = ConfigManager()
+
 rag_tool = CustomRAGTool(config)
 web_search_tool = SerperDevTool()
 

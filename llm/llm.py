@@ -10,7 +10,8 @@ import boto3
 
 load_dotenv()
 logger = logging.getLogger(__name__)
-
+from config.config_manager import ConfigManager
+config = ConfigManager()
 # Initialize clients globally
 gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
@@ -24,11 +25,12 @@ bedrock_client = boto3.client(
 model_id = os.getenv("MODEL_ID")
 
 # Ollama configuration
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_HOST = config.get_ollama_host()
 OLLAMA_GENERATE_URL = f"{OLLAMA_HOST}/api/chat"
-OLLAMA_MODEL = os.getenv("OLLAMA_SEMANTIC_MODEL", "gemma3:latest")
 EMBED_URL = f"{OLLAMA_HOST}/api/embeddings"
-EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text:latest")
+embedding_config = config.get_embedding_config()
+EMBED_MODEL  = embedding_config.get('model_name', 'nomic-embed-text')
+
 
 
 def generate_content(provider: str, model_name: str, prompt: str) -> str:

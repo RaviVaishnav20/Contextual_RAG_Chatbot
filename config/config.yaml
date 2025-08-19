@@ -12,7 +12,7 @@ directories:
 chunking:
   model:
     provider: "ollama"
-    model_name: "llama3.1:8b"
+    model_name: "llama3:8b"
     fallback_provider: "gemini"
     fallback_model_name: "gemini-2.5-flash"
   parameters:
@@ -24,7 +24,7 @@ chunking:
 # contextual_retrieval:
 #   primary:
 #     provider: "ollama"
-#     model_name: "gllama3.1:8b"
+#     model_name: "llama3:8b"
 #   secondary:
 #     provider: "gemini"
 #     model_name: "gemini-2.5-flash"
@@ -48,11 +48,16 @@ contextual_retrieval:
     timeout_seconds: 60  # Timeout for each LLM call
     batch_save_interval: 5  # Save progress every N chunks
 
+reranker:
+  provider: "ollama"
+  model_name: "gemma3"
+  fallback_provider: "gemini"
+  fallback_model_name: "gemini-2.5-flash"
 # Embedding configuration
 embedding:
   provider: "ollama"
   model_name: "nomic-embed-text"
-  base_url: "http://localhost:11434"
+  # base_url: "http://localhost:11434"
   dimension: 768
   additional_kwargs:
     mirostat: 0
@@ -93,43 +98,48 @@ processing:
 
 # CrewAI Multi-Agent Configuration
 crewai:
-  agents:
-    general_agent:
-      role: "General Knowledge Expert"
-      model:
-        provider: "ollama"
-        model_name: "llama3.1:8b"
-      temperature: 0.7
-      max_tokens: 1000
+  llm:
+    provider: "ollama"
+    model_name: "gemma3"
+
+
+  # agents:
+  #   general_agent:
+  #     role: "General Knowledge Expert"
+  #     model:
+  #       provider: "ollama"
+  #       model_name: "llama3:8b"
+  #     temperature: 0.7
+  #     max_tokens: 1000
     
-    rag_agent:
-      role: "Internal Knowledge Specialist"
-      model:
-        provider: "ollama"
-        model_name: "llama3.1:8b"
-      temperature: 0.3
-      max_tokens: 1500
-      search_top_k: 5
+  #   rag_agent:
+  #     role: "Internal Knowledge Specialist"
+  #     model:
+  #       provider: "ollama"
+  #       model_name: "llama3:8b"
+  #     temperature: 0.3
+  #     max_tokens: 1500
+  #     search_top_k: 5
     
-    web_agent:
-      role: "Web Research Specialist"
-      model:
-        provider: "ollama"
-        model_name: "llama3.1:8b"
-      temperature: 0.5
-      max_tokens: 1200
-      search_results_limit: 10
+  #   web_agent:
+  #     role: "Web Research Specialist"
+  #     model:
+  #       provider: "ollama"
+  #       model_name: "llama3:8b"
+  #     temperature: 0.5
+  #     max_tokens: 1200
+  #     search_results_limit: 10
     
-    coordinator:
-      role: "Query Coordinator"
-      model:
-        provider: "ollama"
-        model_name: "llama3.1:8b"
-      temperature: 0.4
-      max_tokens: 2000
+  #   coordinator:
+  #     role: "Query Coordinator"
+  #     model:
+  #       provider: "ollama"
+  #       model_name: "llama3:8b"
+  #     temperature: 0.4
+  #     max_tokens: 2000
   
-  crew_settings:
-    process: "hierarchical"
-    verbose: true
-    max_iterations: 3
-    timeout_minutes: 10
+  # crew_settings:
+  #   process: "hierarchical"
+  #   verbose: true
+  #   max_iterations: 3
+  #   timeout_minutes: 10

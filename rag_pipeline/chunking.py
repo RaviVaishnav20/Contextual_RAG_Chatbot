@@ -37,7 +37,7 @@ def semantic_merge(text: str, config: ConfigManager) -> list[str]:
     WORD_LIMIT = chunking_config.get('parameters', {}).get('word_limit', 512)
     
     primary_provider = chunking_config.get('model', {}).get('provider', 'ollama')
-    primary_model = chunking_config.get('model', {}).get('model_name', 'llama3.1:8b')
+    primary_model = chunking_config.get('model', {}).get('model_name', 'llama3:8b')
     fallback_provider = chunking_config.get('model', {}).get('fallback_provider', 'gemini')
     fallback_model = chunking_config.get('model', {}).get('fallback_model_name', 'gemini-2.5-flash')
     

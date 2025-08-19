@@ -20,7 +20,7 @@ def setup_ollama_embeddings(config: ConfigManager):
     
     embed_model = OllamaEmbedding(
         model_name=embedding_config.get('model_name', 'nomic-embed-text'),
-        base_url=embedding_config.get('base_url', 'http://localhost:11434'),
+        base_url=config.get_ollama_host(),
         ollama_additional_kwargs=embedding_config.get('additional_kwargs', {"mirostat": 0}),
         timeout=120
     )
@@ -29,8 +29,8 @@ def setup_ollama_embeddings(config: ConfigManager):
 
     rag_config = config.get_rag_config()
     llm = Ollama(
-        model=rag_config.get('model', {}).get('model_name', 'llama3.1:8b'), 
-        base_url=embedding_config.get('base_url', 'http://localhost:11434'),
+        model=rag_config.get('model', {}).get('model_name', 'llama3:8b'), 
+        base_url=config.get_ollama_host(),
         request_timeout=120
     )
     Settings.llm = llm

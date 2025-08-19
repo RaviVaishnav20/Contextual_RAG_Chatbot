@@ -13,6 +13,16 @@ class ConfigManager:
     def __init__(self, config_path: str = ROOT/"config"/"config.yaml"):
         self.config_path = config_path
         self.config = self._load_config()
+        # Detect if running inside Docker
+        self.in_docker = os.path.exists("/.dockerenv")
+
+        if self.in_docker:
+            self.ollama_host = os.getenv("OLLAMA_DOCKER_HOST", "http://ollama:11434")
+        else:
+            self.ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+
+    def get_ollama_host(self):
+        return self.ollama_host
     
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from YAML file"""
@@ -47,6 +57,10 @@ class ConfigManager:
         """Get contextual retrieval configuration"""
         return self.config.get('contextual_retrieval', {})
     
+    def get_reranker_config(self) -> Dict[str, Any]:
+        """Get reranker configuration"""
+        return self.config.get('reranker', {})
+    
     def get_embedding_config(self) -> Dict[str, Any]:
         """Get embedding configuration"""
         return self.config.get('embedding', {})
@@ -54,6 +68,10 @@ class ConfigManager:
     def get_rag_config(self) -> Dict[str, Any]:
         """Get RAG configuration"""
         return self.config.get('rag', {})
+    
+    def get_crewai_config(self) -> Dict[str, Any]:
+        """Get crewai configuration"""
+        return self.config.get('crewai', {})
     
     def get_directories(self) -> Dict[str, str]:
         """Get directory paths"""
