@@ -61,7 +61,7 @@ embedding:
 # Database configuration
 database:
   host: "localhost"
-  port: 5432
+  port: 5433
   database: "vector_db"
   user: "ravi"
   password: "password"
