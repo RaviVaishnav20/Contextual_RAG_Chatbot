@@ -18,7 +18,8 @@ from typing import List, Dict, Optional
 from agentic_rag.rag_rerank import get_rag_response
 # from config.config_manager import ConfigManager
 from ragas import EvaluationDataset
-
+from dotenv import load_dotenv
+load_dotenv()
 class RAGASEvaluator:
     """Simple RAGAS evaluation and tracing for your RAG system"""
     

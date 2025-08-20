@@ -50,7 +50,7 @@ contextual_retrieval:
 
 reranker:
   provider: "ollama"
-  model_name: "gemma3"
+  model_name: "gemma3:1b"
   fallback_provider: "gemini"
   fallback_model_name: "gemini-2.5-flash"
 # Embedding configuration
@@ -81,7 +81,7 @@ database:
 rag:
   model:
     provider: "ollama"
-    model_name: "gemma3"
+    model_name: "gemma3:1b"
     fallback_provider: "gemini"
     fallback_model_name: "gemini-2.5-flash"
   parameters:
@@ -98,9 +98,9 @@ processing:
 
 # CrewAI Multi-Agent Configuration
 crewai:
-  llm:
+  model:
     provider: "ollama"
-    model_name: "gemma3"
+    model_name: "gemma3:1b"
 
 
   # agents:
