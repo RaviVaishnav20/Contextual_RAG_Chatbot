@@ -12,7 +12,7 @@ directories:
 chunking:
   model:
     provider: "ollama"
-    model_name: "llama3:8b"
+    model_name: "llama3.1:8b"
     fallback_provider: "gemini"
     fallback_model_name: "gemini-2.5-flash"
   parameters:
@@ -24,7 +24,7 @@ chunking:
 # contextual_retrieval:
 #   primary:
 #     provider: "ollama"
-#     model_name: "llama3:8b"
+#     model_name: "llama3.1:8b"
 #   secondary:
 #     provider: "gemini"
 #     model_name: "gemini-2.5-flash"
