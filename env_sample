@@ -3,5 +3,19 @@ GROQ_API_KEY=
 AWS_REGION=
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
-MODEL_ID=
+MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
 SERPER_API_KEY=
+OPENAI_API_KEY=
+PHOENIX_API_KEY=
+PHOENIX_COLLECTOR_ENDPOINT='http://localhost:6006'
+
+# Database Configuration (already set in docker-compose)
+DATABASE_HOST=postgres 
+DATABASE_PORT=5432
+DATABASE_NAME=vector_db
+DATABASE_USER=ravi
+DATABASE_PASSWORD=password
+DATABASE_TABLE_NAME=contextual_embedding
+
+# Ollama Configuration (already set in docker-compose)
+OLLAMA_HOST=http://ollama:11434

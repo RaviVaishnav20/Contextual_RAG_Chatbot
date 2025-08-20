@@ -1,0 +1,102 @@
+# version: '3.8'
+
+services:
+  # PostgreSQL database with PGVector extension
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: contextual_rag_postgres
+    environment:
+      POSTGRES_DB: vector_db
+      POSTGRES_USER: ravi
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with vector extension
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ravi -d vector_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rag_network
+
+  # Ollama service for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: contextual_rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # healthcheck: disabled
+    networks:
+      - rag_network
+
+  # Main RAG application
+  rag_app:
+    build: .
+    container_name: contextual_rag_app
+    environment:
+      # Database configuration
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: vector_db
+      DATABASE_USER: ravi
+      DATABASE_PASSWORD: password
+      
+      # Ollama configuration
+      OLLAMA_HOST: http://ollama:11434
+      
+      # API keys (set these in .env file)
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SERPER_API_KEY: ${SERPER_API_KEY}
+      
+      # AWS credentials for Bedrock (optional)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      MODEL_ID: ${MODEL_ID}
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount resources directory
+      - ./resources:/app/resources
+      # Persist artifacts
+      - ./artifacts:/app/artifacts
+      # Mount config
+      - ./config:/app/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - rag_network
+
+  # Phoenix observability platform (optional)
+  # phoenix:
+  #   image: arizephoenix/phoenix:latest
+  #   container_name: contextual_rag_phoenix
+  #   ports:
+  #     - "6006:6006"
+  #   environment:
+  #     PHOENIX_SQL_DATABASE_URL: sqlite:///tmp/phoenix.db
+  #   volumes:
+  #     - phoenix_data:/tmp
+  #   networks:
+  #     - rag_network
+
+volumes:
+  postgres_data:
+  ollama_data:
+  phoenix_data:
+
+networks:
+  rag_network:
+    driver: bridge

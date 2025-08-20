@@ -17,7 +17,7 @@ uv sync
 ```
 
 ### 2. Set PYTHONPATH
-```
+```bash
 pwd
 ```
 Ensure your Python path is correctly set. Replace `/Users/ravi/Contextual_RAG_ChatBot` with your actual project path.
@@ -116,6 +116,274 @@ uv run rag_pipeline/main.py --re-embed
 ```bash
 uv run -m agentic_rag.api
 ```
+
+## Docker Setup and Usage Guide
+
+### 📋 Prerequisites
+
+Install Docker and Docker Compose:
+```bash
+# On macOS using Homebrew
+brew install docker docker-compose
+
+# On Ubuntu/Debian
+sudo apt update && sudo apt install docker.io docker-compose
+
+# On Windows - Download Docker Desktop
+```
+
+Verify Installation:
+```bash
+docker --version
+docker-compose --version
+```
+
+### 🚀 Step-by-Step Docker Setup
+
+#### Step 1: Prepare Environment
+
+Copy environment file:
+```bash
+cp .env.docker .env
+```
+
+Edit `.env` file with your API keys:
+```bash
+nano .env  # or use your preferred editor
+```
+
+**Required API Keys:**
+- `GEMINI_API_KEY`: Get from Google AI Studio
+- `GROQ_API_KEY`: Get from Groq Console
+- `OPENAI_API_KEY`: Get from OpenAI Platform
+- `SERPER_API_KEY`: Get from Serper.dev
+
+#### Step 2: Create Required Directories
+```bash
+# Create directories that will be mounted as volumes
+mkdir -p resources artifacts docker config
+```
+
+#### Step 3: Build and Start Services
+```bash
+# Build and start all services in detached mode
+docker-compose up -d --build
+```
+
+**What happens during this step:**
+- **PostgreSQL**: Starts with PGVector extension enabled
+- **Ollama**: Starts local LLM inference service
+- **RAG App**: Builds your application image and starts the API server
+- **Phoenix**: Starts observability dashboard (optional)
+
+#### Step 4: Verify Services are Running
+```bash
+# Check all containers are healthy
+docker-compose ps
+
+# Check logs
+docker-compose logs rag_app
+docker-compose logs postgres
+docker-compose logs ollama
+```
+
+#### Step 5: Download Ollama Models
+```bash
+# Enter Ollama container
+docker-compose exec ollama bash
+
+# Download required models
+#ollama pull llama3.1:8b
+ollama pull nomic-embed-text
+ollama pull gemma3:1b
+
+# Exit container
+exit
+```
+
+#### Step 6: Process Your Documents
+
+Add your documents to the resources folder:
+```bash
+cp your_documents.pdf resources/
+```
+
+Run the RAG pipeline:
+```bash
+# Process documents and create embeddings
+docker-compose exec rag_app uv run rag_pipeline/main.py
+
+# Or re-embed existing data
+docker-compose exec rag_app uv run rag_pipeline/main.py --re-embed
+```
+
+### 🎯 Using the Docker Application
+
+#### API Endpoints
+Once running, your API will be available at:
+- **Main API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Phoenix Dashboard**: http://localhost:6006 (for observability)
+
+#### Available Endpoints
+
+**Basic RAG**: POST `/rag`
+```bash
+curl -X POST "http://localhost:8000/rag" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "What are the procurement standards?"}'
+```
+
+**Agentic RAG with CrewAI**: POST `/agentic_rag`
+```bash
+curl -X POST "http://localhost:8000/agentic_rag" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "How should vendors be evaluated?"}'
+```
+
+**Get Relevant Chunks**: POST `/relevant_chunks`
+```bash
+curl -X POST "http://localhost:8000/relevant_chunks" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "What is the approval process?"}'
+```
+
+## Evaluation Framework
+
+The system includes comprehensive evaluation capabilities using both RAGAS and Phoenix frameworks to assess RAG performance across multiple dimensions.
+
+### 📊 RAGAS Evaluation
+
+**RAGAS** (Retrieval Augmented Generation Assessment) provides automated evaluation of RAG systems using LLM-based metrics.
+
+#### Key Metrics Evaluated:
+- **Faithfulness**: Measures how grounded the generated answer is in the retrieved context
+- **Answer Relevancy**: Evaluates how relevant the generated answer is to the given question
+- **Context Precision**: Assesses the precision of retrieved context chunks
+- **Context Recall**: Measures the coverage of relevant information in retrieved context
+
+#### Running RAGAS Evaluation:
+```bash
+# Run RAGAS evaluation with predefined test queries
+uv run evaluation/ragas_evaluation.py
+
+# With custom CSV file containing RAG results
+uv run evaluation/ragas_evaluation.py --rag-results artifacts/rag_results.csv
+```
+
+#### RAGAS Configuration:
+```python
+# Located in: evaluation/ragas_evaluation.py
+TEST_QUERIES = [
+    {
+        "question": "What are the procurement standards?",
+        "ground_truth": "Abu Dhabi procurement standards include transparency, competitiveness, and value for money."
+    },
+    # ... more test queries
+]
+```
+
+#### Output:
+- **CSV Results**: `artifacts/ragas_evaluation_results.csv`
+- **Console Summary**: Metric averages and performance insights
+- **Best/Worst Queries**: Identification of top and bottom performing queries
+
+### 🔍 Phoenix Evaluation
+
+**Phoenix** provides observability and evaluation capabilities with real-time tracing and comprehensive RAG assessment.
+
+#### Key Features:
+- **Live Tracing**: Real-time observation of RAG pipeline execution
+- **Hallucination Detection**: Identifies potential hallucinations in generated responses
+- **QA Correctness**: Evaluates the correctness of question-answering
+- **Relevance Assessment**: Measures relevance of retrieved documents
+- **Interactive Dashboard**: Web-based interface for evaluation exploration
+
+#### Running Phoenix Evaluation:
+```bash
+# Start Phoenix evaluation with dashboard
+uv run evaluation/phoenix_evaluation.py
+```
+
+#### Phoenix Dashboard:
+Once running, access the Phoenix dashboard at:
+- **Dashboard URL**: http://localhost:6006
+- **Trace Exploration**: Interactive trace analysis
+- **Metric Visualization**: Charts and graphs of evaluation metrics
+- **Document Analysis**: Detailed context and retrieval analysis
+
+#### Evaluation Outputs:
+- **Queries DataFrame**: `artifacts/queries_df.csv`
+- **Retrieved Documents**: `artifacts/retrieved_documents_df.csv`
+- **Hallucination Evaluation**: `artifacts/hallucination_eval_df.csv`
+- **QA Evaluation**: `artifacts/qa_eval_df.csv`
+- **Relevance Evaluation**: `artifacts/relevance_eval_df.csv`
+
+### 📈 Evaluation Workflow
+
+#### 1. Setup Evaluation Environment
+```bash
+# Ensure artifacts directory exists
+mkdir -p artifacts
+
+# Set required API keys for evaluation models
+export OPENAI_API_KEY="your-openai-key"  # Required for both RAGAS and Phoenix
+```
+
+#### 2. Prepare Test Dataset
+```python
+# Define your evaluation queries
+test_queries = [
+    {
+        "question": "Your test question",
+        "ground_truth": "Expected answer (optional)"
+    }
+]
+```
+
+#### 3. Run Comprehensive Evaluation
+```bash
+# Run both evaluation frameworks
+uv run evaluation/ragas_evaluation.py
+uv run evaluation/phoenix_evaluation.py
+
+# Or run evaluation on existing RAG results
+uv run evaluation/ragas_evaluation.py --rag-results artifacts/previous_results.csv
+```
+
+#### 4. Analyze Results
+```bash
+# View RAGAS results
+cat artifacts/ragas_evaluation_results.csv
+
+# Open Phoenix dashboard for interactive analysis
+# Navigate to http://localhost:6006
+```
+
+### 🎯 Evaluation Best Practices
+
+#### Test Query Design:
+- **Diverse Topics**: Cover all major document themes
+- **Varying Complexity**: Include simple facts and complex reasoning questions
+- **Edge Cases**: Test boundary conditions and potential failure modes
+- **Ground Truth**: Provide expected answers when possible for accurate assessment
+
+#### Continuous Evaluation:
+```bash
+# Set up automated evaluation pipeline
+# Run evaluation after each model or configuration change
+uv run evaluation/ragas_evaluation.py
+uv run evaluation/phoenix_evaluation.py
+
+# Compare results across different configurations
+diff artifacts/ragas_evaluation_results_v1.csv artifacts/ragas_evaluation_results_v2.csv
+```
+
+#### Performance Monitoring:
+- **Baseline Establishment**: Run initial evaluation to establish performance baselines
+- **Regular Assessment**: Periodic evaluation to detect performance drift
+- **A/B Testing**: Compare different configurations using evaluation metrics
+- **Error Analysis**: Deep dive into low-scoring queries for system improvement
 
 ## About Contextual RAG Chatbot
 
@@ -339,8 +607,6 @@ retriever_agent:
     You're a meticulous analyst with a keen eye for detail
 ```
 
-
-
 ## Architecture Overview
 
 ```
@@ -374,5 +640,7 @@ retriever_agent:
 - **📊 Production Ready**: PostgreSQL + PGVector for scalable vector storage
 - **🛡️ Robust Fallbacks**: Multi-tier model architecture ensures high availability
 - **📈 Resumable Processing**: Progress tracking allows interruption and continuation
+- **🔍 Comprehensive Evaluation**: RAGAS and Phoenix frameworks for thorough assessment
+- **🐳 Docker Support**: Containerized deployment for easy setup and scaling
 
-This implementation combines cutting-edge RAG techniques with practical engineering considerations, resulting in a robust, scalable, and privacy-conscious document Q&A system.
+This implementation combines cutting-edge RAG techniques with practical engineering considerations, resulting in a robust, scalable, and privacy-conscious document Q&A system with comprehensive evaluation capabilities.

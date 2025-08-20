@@ -13,7 +13,9 @@ from llama_index.vector_stores.postgres import PGVectorStore
 from sqlalchemy import create_engine, make_url
 from llama_index.llms.ollama import Ollama 
 from config.config_manager import ConfigManager
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 def setup_ollama_embeddings(config: ConfigManager):
     """Initialize Ollama embedding model with configuration"""
     embedding_config = config.get_embedding_config()
@@ -40,9 +42,18 @@ def setup_pgvector_store(config: ConfigManager):
     """Setup PGVector store following official LlamaIndex documentation"""
     db_config = config.get_database_config()
     embedding_config = config.get_embedding_config()
-    
-    connection_string = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
-    
+    db_host = os.getenv("DATABASE_HOST", "localhost")
+    db_port = os.getenv("DATABASE_PORT", "5433")
+    db_name =os.getenv("DATABASE_NAME", "vector_db")
+    db_table_name =os.getenv("DATABASE_TABLE_NAME", "contextual_embedding")
+    db_user =os.getenv("DATABASE_USER", "ravi")
+    db_password = os.getenv("DATABASE_PASSWORD", "password")
+
+
+    connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    # print(connection_string)
+    # connection_string = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
+    # print(connection_string)
     url = make_url(connection_string)
     
     vector_store = PGVectorStore.from_params(
@@ -51,12 +62,15 @@ def setup_pgvector_store(config: ConfigManager):
         password=url.password,
         port=url.port,
         user=url.username,
-        table_name=db_config['table_name'],
+        table_name=db_table_name,
         embed_dim=embedding_config.get('dimension', 768),
         hnsw_kwargs=db_config.get('hnsw_kwargs', {}),
     )
     
     return vector_store
+
+
+    
 
 def create_documents_from_chunks(chunks: List[str], metadata_list: List[dict] = None):
     """Convert text chunks to LlamaIndex Documents"""
@@ -123,3 +137,21 @@ def load_existing_index(config: ConfigManager = None):
     
     index = VectorStoreIndex([], storage_context=storage_context)
     return index
+
+if __name__=="__main__":
+    user_query = "Benifit tracking"
+    config = ConfigManager()
+    
+    initial_k = 15
+    setup_ollama_embeddings(config)
+    index = load_existing_index(config)
+    
+    # Step 1: Get more chunks initially
+    rag_config = config.get_rag_config()
+    original_top_k = rag_config.get('parameters', {}).get('similarity_top_k', 5)
+    rag_config['parameters']['similarity_top_k'] = initial_k
+    
+    response = query_embeddings(index, user_query, config)
+    print(response)
+    
+    

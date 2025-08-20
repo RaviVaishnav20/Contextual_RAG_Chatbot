@@ -15,3 +15,4 @@ wheels/
 .DS_Store
 artifacts/metadata_chunk.json
 experiments/
+.env.docker
