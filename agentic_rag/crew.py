@@ -44,7 +44,7 @@ class AgenticRag:
             verbose=True,
             tools=[
                 self.rag_tool_instance, # Use the stored instance
-                web_search_tool
+                # web_search_tool
             ],
             llm=llm,
             max_retry_limit=1,
@@ -81,6 +81,7 @@ class AgenticRag:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
+            manager_llm=llm,
             verbose=True
         )
     

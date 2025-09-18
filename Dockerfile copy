@@ -20,7 +20,9 @@ RUN apt-get update && apt-get install -y \
     git \
     # Curl for health checks and downloads
     curl \
-    # Clean up apt cache to reduce image size
+    # Additional dependencies for Phoenix and RAGAS
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv for faster Python package management
@@ -33,22 +35,32 @@ COPY README.md ./
 # Install Python dependencies using uv
 RUN uv sync 
 
+# All required dependencies are defined in pyproject.toml and installed via `uv sync`
+
 # Copy application code
 COPY . .
 
 # Create necessary directories
 RUN mkdir -p artifacts/markdown_artifacts
+RUN mkdir -p openwebui/functions
+
+# Copy Open WebUI functions
+COPY openwebui/functions/ /app/openwebui/functions/
 
 # Set Python path to include the application directory
 ENV PYTHONPATH=/app:$PYTHONPATH
+
+# Environment variables for Phoenix and monitoring
+ENV PHOENIX_SQL_DATABASE_URL=postgresql://ravi:password@postgres:5432/vector_db
+ENV PHOENIX_COLLECTOR_ENDPOINT=http://phoenix:6006
+ENV OPENTELEMETRY_EXPORTER_OTLP_ENDPOINT=http://phoenix:6006/v1/traces
 
 # Expose port for FastAPI
 EXPOSE 8000
 
 # Health check to ensure the application is running
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/docs || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Default command to run the API server
-CMD ["uv", "run", "-m", "agentic_rag.api"]
-
+# Default command to run the enhanced API server
+CMD ["uv", "run", "-m", "agentic_rag.enhanced_api"]

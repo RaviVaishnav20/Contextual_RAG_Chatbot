@@ -7,19 +7,31 @@ if str(ROOT) not in sys.path:
     
 from crewai.tools import BaseTool
 from typing import Type
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 from rag_pipeline.embedding_storage import load_existing_index, query_embeddings, setup_ollama_embeddings
 from config.config_manager import ConfigManager
 from agentic_rag.ollama_reranker import OllamaReRanker
 
 class CustomRAGToolInput(BaseModel):
-    """Input schema for Enhanced RAG Tool with re-ranking."""
-    query: str = Field(..., description="Query to search the document.")
+    """Input schema for Enhanced RAG Tool with re-ranking.
+
+    Accepts either a plain string or a dict-shaped payload coming from
+    hierarchical manager prompts (e.g., {"description": ..., "type": "str"}).
+    Coerces input to string before passing to the tool runtime.
+    """
+    query: object = Field(..., description="Query to search the document.")
+
+    @field_validator("query", mode="before")
+    @classmethod
+    def coerce_query_to_string(cls, value):
+        if isinstance(value, dict) and "description" in value:
+            return value["description"]
+        return str(value)
 
 class CustomRAGTool(BaseTool):
     name: str = "CustomRAGTool"
-    description: str = "Search documents with Ollama-based re-ranking for better relevance."
+    description: str = "Search the document for the given query."
     args_schema: Type[BaseModel] = CustomRAGToolInput
     
     model_config = ConfigDict(extra="allow")

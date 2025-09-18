@@ -97,11 +97,13 @@ def generate_content(provider: str, model_name: str, prompt: str) -> str:
     elif provider.lower() == "ollama":
         response = requests.post(OLLAMA_GENERATE_URL, json={
             "model": model_name,
-            "messages": [{"role": "user", "content": prompt}],
+            "prompt": prompt, #use it when using ollama from windows
+            # "messages": [{"role": "user", "content": prompt}], #uncomment comment above line when using local ollama llm
             "stream": False
         }, timeout=120)
         response.raise_for_status()
-        return response.json().get("message", {}).get("content", "").strip()
+        return response.json().get("response", "") #use it when using ollama from windows
+        # return response.json().get("message", {}).get("content", "").strip() #uncomment comment above line when using local ollama llm
     else:
         raise ValueError("Unsupported provider. Choose 'gemini', 'groq', or 'ollama'.")
     

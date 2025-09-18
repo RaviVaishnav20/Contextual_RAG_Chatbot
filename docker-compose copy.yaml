@@ -1,0 +1,141 @@
+# version: '3.8'
+
+services:
+  # PostgreSQL database with PGVector extension
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: contextual_rag_postgres
+    environment:
+      POSTGRES_DB: vector_db
+      POSTGRES_USER: ravi
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with vector extension
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ravi -d vector_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rag_network
+
+  # Ollama service for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: contextual_rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - rag_network
+
+  # Main RAG application
+  rag_app:
+    build: .
+    container_name: contextual_rag_app
+    environment:
+      # Database configuration
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: vector_db
+      DATABASE_USER: ravi
+      DATABASE_PASSWORD: password
+      
+      # Ollama configuration
+      OLLAMA_HOST: http://ollama:11434
+      
+      # API keys (set these in .env file)
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SERPER_API_KEY: ${SERPER_API_KEY}
+      
+      # AWS credentials for Bedrock (optional)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      MODEL_ID: ${MODEL_ID}
+      
+      # Phoenix configuration
+      PHOENIX_SQL_DATABASE_URL: postgresql://ravi:password@postgres:5432/vector_db
+      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:6006
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount resources directory
+      - ./resources:/app/resources
+      # Persist artifacts
+      - ./artifacts:/app/artifacts
+      # Mount config
+      - ./config:/app/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+      phoenix:
+        condition: service_healthy
+    networks:
+      - rag_network
+
+  # Open WebUI for chat interface
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: contextual_rag_webui
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=your-secret-key-here
+      # Custom API endpoint for RAG
+      - RAG_API_BASE_URL=http://rag_app:8000
+      # Enable custom functions
+      - ENABLE_RAG_WEB_SEARCH=true
+      - ENABLE_RAG_HYBRID_SEARCH=true
+    ports:
+      - "3000:8080"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    depends_on:
+      - ollama
+      - rag_app
+    networks:
+      - rag_network
+
+  # Phoenix observability platform
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: contextual_rag_phoenix
+    ports:
+      - "6006:6006"
+    environment:
+      PHOENIX_SQL_DATABASE_URL: postgresql://ravi:password@postgres:5432/vector_db
+    volumes:
+      - phoenix_data:/tmp
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:6006/health').getcode()==200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - rag_network
+
+volumes:
+  postgres_data:
+  ollama_data:
+  phoenix_data:
+  open-webui-data:
+
+networks:
+  rag_network:
+    driver: bridge

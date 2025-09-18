@@ -50,7 +50,7 @@ contextual_retrieval:
 
 reranker:
   provider: "ollama"
-  model_name: "gemma3:1b"
+  model_name: "gemma3:latest"
   fallback_provider: "gemini"
   fallback_model_name: "gemini-2.5-flash"
 # Embedding configuration
@@ -66,7 +66,7 @@ embedding:
 # Database configuration
 database:
   host: "localhost"
-  port: 5433
+  port: 5432
   database: "vector_db"
   user: "ravi"
   password: "password"
@@ -81,7 +81,7 @@ database:
 rag:
   model:
     provider: "ollama"
-    model_name: "gemma3:1b"
+    model_name: "gemma3:latest"
     fallback_provider: "gemini"
     fallback_model_name: "gemini-2.5-flash"
   parameters:
@@ -100,7 +100,7 @@ processing:
 crewai:
   model:
     provider: "ollama"
-    model_name: "gemma3:1b"
+    model_name: "gemma3:latest"
 
 
   # agents:
