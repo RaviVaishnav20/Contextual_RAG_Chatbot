@@ -1,0 +1,86 @@
+# Configuration file for Contextual RAG ChatBot (project-local)
+
+directories:
+  resources: "${RESOURCES_DIR:-/Users/ravi/Contextual_RAG_Chatbot_New/resources}"
+  markdown_artifacts: "data/artifacts/markdown_artifacts"
+  metadata_chunk_file: "data/artifacts/metadata_chunk.json"
+  metadata_context_chunk_file: "data/artifacts/metadata_context_chunk.json"
+  file_hash_cache: "data/artifacts/file_hash_cache.json"
+
+chunking:
+  model:
+    primary_provider: "${CHUNK_PRIMARY_PROVIDER:-ollama}"
+    primary_model_name: "${CHUNK_PRIMARY_MODEL:-llama3:8b}"
+    fallback_provider: "${CHUNK_FALLBACK_PROVIDER:-gemini}"
+    fallback_model_name: "${CHUNK_FALLBACK_MODEL:-gemini-2.5-flash}"
+  parameters:
+    chunk_size: 256
+    chunk_overlap: 50
+    word_limit: 512
+
+contextual_retrieval:
+  primary:
+    provider: "${CTX_PRIMARY_PROVIDER:-ollama}"
+    model_name: "${CTX_PRIMARY_MODEL:-llama3:8b}"
+  secondary:
+    provider: "${CTX_SECONDARY_PROVIDER:-gemini}"
+    model_name: "${CTX_SECONDARY_MODEL:-gemini-2.5-flash}"
+  tertiary:
+    provider: "${CTX_TERTIARY_PROVIDER:-bedrock}"
+    model_name: "${CTX_TERTIARY_MODEL:-claude}"
+  parameters:
+    max_document_length: 90000 # 450000
+    timeout_seconds: 60
+    batch_save_interval: 5
+
+#test_embed
+database:
+  host: "${DATABASE_HOST:-localhost}"
+  port: ${DATABASE_PORT:-5432}
+  database: "${DATABASE_NAME:-vector_db}"
+  user: "${DATABASE_USER:-ravi}"
+  password: "${DATABASE_PASSWORD:-password}"
+  table_name: "${DATABASE_TABLE_NAME:-test_embed}" 
+  hnsw_kwargs:
+    hnsw_m: 16
+    hnsw_ef_construction: 64
+    hnsw_ef_search: 40
+    hnsw_dist_method: "vector_cosine_ops"
+
+embedding:
+  provider: "${EMBED_PROVIDER:-ollama}"
+  model_name: "${EMBED_MODEL:-nomic-embed-text}"
+  dimension: ${EMBED_DIMENSION:-768}
+  timeout: ${EMBED_TIMEOUT:-120}
+
+rag:
+  retriver:
+    similarity_top_k: 10
+  reranker:
+    primary_provider: "${RERANK_PRIMARY_PROVIDER:-ollama}"
+    primary_model_name: "${RERANK_PRIMARY_MODEL:-llama3:8b}"
+    fallback_provider: "${RERANK_FALLBACK_PROVIDER:-gemini}"
+    fallback_model_name: "${RERANK_FALLBACK_MODEL:-gemini-2.5-flash}"
+    top_k: 5
+  rag_answer:
+    primary_provider: "${RAG_PRIMARY_PROVIDER:-ollama}"
+    primary_model_name: "${RAG_PRIMARY_MODEL:-llama3:8b}"
+    fallback_provider: "${RAG_FALLBACK_PROVIDER:-gemini}"
+    fallback_model_name: "${RAG_FALLBACK_MODEL:-gemini-2.5-flash}"
+    
+
+
+processing:
+  export_type: "MARKDOWN"
+  batch_size: 10
+  enable_hash_checking: true
+  parallel_processing: false
+
+crew:
+  model:
+    primary_provider: "${CREW_PRIMARY_PROVIDER:-ollama}"
+    primary_model_name: "${CREW_PRIMARY_MODEL:-gemma3}"
+    fallback_provider: "${CREW_FALLBACK_PROVIDER:-gemini}"
+    fallback_model_name: "${CREW_FALLBACK_MODEL:-gemini-2.5-flash}" 
+
+

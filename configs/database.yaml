@@ -1,0 +1,43 @@
+default:
+  postgres:
+    host: localhost
+    port: 5432
+    database: vector_db
+    username: ravi
+    password: password
+    table_name: contextual_embedding
+    driver: psycopg2
+    ssl_mode: prefer
+
+development:
+  postgres:
+    host: localhost
+    port: 5432
+    database: vector_db
+    username: ravi
+    password: password
+    table_name: contextual_embedding
+    driver: psycopg2
+    ssl_mode: prefer
+
+production:
+  postgres:
+    host: ${DATABASE_HOST}
+    port: ${DATABASE_PORT}
+    database: ${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    table_name: ${DATABASE_TABLE_NAME}
+    driver: psycopg2
+    ssl_mode: require
+
+docker:
+  postgres:
+    host: postgres
+    port: 5432
+    database: rag
+    username: rag
+    password: rag
+    table_name: embedded_chunks
+    driver: psycopg2
+    ssl_mode: prefer

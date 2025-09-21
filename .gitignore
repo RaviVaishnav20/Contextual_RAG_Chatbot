@@ -16,3 +16,5 @@ wheels/
 artifacts/metadata_chunk.json
 experiments/
 .env.docker
+resources/
+data/
