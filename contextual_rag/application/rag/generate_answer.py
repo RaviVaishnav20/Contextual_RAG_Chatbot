@@ -6,7 +6,19 @@ def synthesize_answer(contexts: List[Tuple[Tuple[str, float, str], float]], ques
     # Placeholder answer synthesis
     clean_context = [c[0][2] for c in contexts]
     joined = "\n\n".join(clean_context)
-    return (f"#Generate answer for given Query, refer Context to provide the answer \n\n ##Query: {question} \n\n ##Context: {joined}", clean_context)
+    return (f"""
+You are an expert assistant. Answer the user's Query directly and clearly, 
+using the provided Context only as supporting information. 
+Do not mention 'chunks','documents', or analyze the context separately. 
+If the Context does not provide enough information, respond with 
+'I don't have enough information from the context to answer this query.'
+
+## Query:
+{question}
+
+## Context:
+{joined}
+""", clean_context)
 
 
 

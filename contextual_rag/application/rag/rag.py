@@ -6,7 +6,7 @@ from contextual_rag.utils.save_data import save_rag_response
 
 async def retrieve_step(query: str) -> List[Tuple[str, float, str]]:
     return retrieve_with_llama_index(query)
-
+ 
 async def rerank_step(query:str, candidates: List[Tuple[str, float, str]]) -> List[Tuple[str, float]]:
     return rerank(query, candidates)
 

@@ -17,6 +17,6 @@ wheels/
 experiments/
 .env.docker
 .vscode
-# .zen
+.zen/
 data/
 resources/

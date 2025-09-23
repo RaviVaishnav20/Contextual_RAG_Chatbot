@@ -40,7 +40,7 @@ database:
   database: "${DATABASE_NAME:-vector_db}"
   user: "${DATABASE_USER:-ravi}"
   password: "${DATABASE_PASSWORD:-password}"
-  table_name: "${DATABASE_TABLE_NAME:-test_dge_embed}" 
+  table_name: "${DATABASE_TABLE_NAME:-test_dge_embed}" #test_v2
   hnsw_kwargs:
     hnsw_m: 16
     hnsw_ef_construction: 64

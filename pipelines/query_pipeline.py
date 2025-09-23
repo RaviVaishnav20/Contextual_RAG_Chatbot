@@ -3,7 +3,7 @@ from zenml import pipeline
 from steps.rag.retrieve import retrieve_step
 from steps.rag.rerank import rerank_step
 from steps.rag.answer import answer_step
-
+ 
 
 @pipeline
 def query_pipeline(question: str) -> str:
