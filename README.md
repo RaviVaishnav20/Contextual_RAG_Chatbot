@@ -1,43 +1,85 @@
 # Contextual RAG Chatbot
 
-## Installation
+> **Agentic contextual RAG pipeline**: ingest resources → markdown → chunk → embed → pgvector → retrieve → rerank → answer, with ZenML pipelines.
 
-Follow these steps to set up the project locally.
+An advanced RAG (Retrieval-Augmented Generation) chatbot that uses contextual chunking, semantic embeddings, and agentic workflows to provide accurate, context-aware responses from your documents.
 
-### 1. Set up Python Environment
+## 🚀 Features
 
-First, ensure you have `uv` installed. If not, you can install it via `pip`:
+- **Contextual Chunking**: Intelligent document chunking with context preservation
+- **Semantic Embeddings**: Vector-based document retrieval using pgvector
+- **Agentic Workflows**: CrewAI-powered intelligent response generation
+- **MLOps Pipeline**: ZenML orchestration for reproducible ML workflows
+- **Real-time Tracking**: Phoenix observability for monitoring
+- **FastAPI Integration**: RESTful API endpoints for easy integration
+- **OpenWebUI**: Modern chat interface for user interaction
+
+## 📋 Prerequisites
+
+- Python 3.13+
+- PostgreSQL with pgvector extension
+- Docker (for observability and UI)
+- uv package manager
+
+## ⚡ Quick Start
+
+### 1. Clone the Repository
+
 ```bash
-pip install uv
+git clone https://github.com/RaviVaishnav20/Contextual_RAG_Chatbot.git
+cd Contextual_RAG_Chatbot
 ```
 
-Then synchronize your project dependencies:
+### 2. Environment Setup
+
+Create your environment file:
+
 ```bash
+cp env.example .env
+```
+
+Add the following to your `.env` file:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+CREWAI_TRACING_ENABLED=true
+```
+
+## 🏗️ Installation & Setup
+
+### Phase 1: ZenML Pipeline Setup
+
+> **Note**: There's a dependency conflict between ZenML and CrewAI, so we'll use separate pyproject.toml files for different phases.
+
+#### Step 1: Initialize ZenML
+
+```bash
+# Use ZenML pyproject.toml (included in repo)
 uv sync
+
+# Initialize ZenML
+uv run zenml init
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES uv run zenml login --local
 ```
 
-### 2. Set PYTHONPATH
+**Troubleshooting ZenML Setup:**
+If you encounter port issues:
+
 ```bash
-pwd
-```
-Ensure your Python path is correctly set. Replace `/Users/ravi/Contextual_RAG_ChatBot` with your actual project path.
-```bash
-export PYTHONPATH=$PYTHONPATH:/Users/ravi/Contextual_RAG_ChatBot
+rm -rf "/Users/ravi/Library/Application Support/zenml/zen_server"
+lsof -i :8237
+kill -9 <PID>
 ```
 
-### 3. Install PostgreSQL and PGVector
+#### Step 2: Install PostgreSQL with pgvector
 
-You have two options for installing PostgreSQL and PGVector:
-
-#### Option 1: Install with Homebrew (Recommended)
+**Option 1: Install with Homebrew (Recommended)**
 
 ```bash
 brew install postgresql@15 pgvector
 ```
 
-#### Option 2: Build PGVector from Source
-
-If you need to keep your current Postgres untouched:
+**Option 2: Build pgvector from Source**
 
 ```bash
 brew install make gcc
@@ -46,601 +88,268 @@ cd pgvector
 make
 make install
 ```
-This will install `vector.control` and `.sql` files into your Postgres extension directory (e.g., `/opt/homebrew/opt/postgresql@15/share/postgresql@15/extension/`).
 
-### 4. After PostgreSQL Installation
-
-Reconnect to PostgreSQL and enable the `vector` extension.
+#### Step 3: Configure PostgreSQL
 
 ```bash
+# Connect to PostgreSQL
 psql -U ravi -d vector_db
+
+# Enable vector extension
 CREATE EXTENSION vector;
 \dx
 ```
 
-### 5. Troubleshooting PostgreSQL Installation
+**Troubleshooting PostgreSQL:**
 
-If you encounter issues, follow these steps:
-
-#### 1. Check if `psql` is installed
-
-Run:
+1. Check if psql is installed:
 ```bash
 which psql
 ```
-If it prints something like `/opt/homebrew/opt/postgresql@15/bin/psql`, it's installed correctly. If it prints nothing, your `PATH` doesn't include Postgres.
 
-#### 2. If missing, add Postgres to PATH
-
-Since your installation lives in `/opt/homebrew/opt/postgresql@15`, add this to your `~/.zshrc`:
-
+2. If missing, add Postgres to PATH:
 ```bash
 nano ~/.zshrc
-```
-Add this line at the bottom:
-```bash
+# Add this line:
 export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
-```
-Save and exit, then reload your shell:
-```bash
 source ~/.zshrc
-```
-Verify:
-```bash
 psql --version
 ```
-You should now see something like: `psql (PostgreSQL) 15.x`.
 
-#### 3. Connect Explicitly
-
-Instead of relying on defaults, specify everything:
+3. Connect explicitly:
 ```bash
 psql -U ravi -d postgres -h localhost
-```
-
-#### 4. Connect to `vector_db`
-
-```bash
 psql -U ravi -d vector_db -h localhost
 ```
 
-### 6. Create Embeddings
+### Phase 2: Data Processing Pipeline
 
-Assuming `metadata_context_chunk.json` is already generated, you can directly create embeddings:
-```bash
-uv run rag_pipeline/main.py --re-embed
-```
+#### Step 1: Ingest Resources
 
-### 7. Run Agentic RAG API
+Convert documents to markdown using Langchain Docling:
 
 ```bash
-uv run -m agentic_rag.api
+uv run python -m tools.run ingest
 ```
 
-## Docker Setup and Usage Guide
+This processes files from the `resources/` folder and saves markdown to `data/markdown/`.
 
-### 📋 Prerequisites
+#### Step 2: Contextual Chunking
 
-Install Docker and Docker Compose:
+Generate semantic chunks with context:
+
 ```bash
-# On macOS using Homebrew
-brew install docker docker-compose
-
-# On Ubuntu/Debian
-sudo apt update && sudo apt install docker.io docker-compose
-
-# On Windows - Download Docker Desktop
+uv run python -m tools.run chunking
 ```
 
-Verify Installation:
+This creates:
+- `metadata_sementic_chunk.json`: Initial semantic chunks
+- `metadata_context_chunk.json`: Contextually enriched chunks
+
+#### Step 3: Build Embeddings
+
+Create and store vector embeddings in pgvector:
+
 ```bash
-docker --version
-docker-compose --version
+uv run python -m tools.run embedding
 ```
 
-### 🚀 Step-by-Step Docker Setup
+#### Step 4: Verify Database Setup
 
-#### Step 1: Prepare Environment
-
-Copy environment file:
 ```bash
-cp .env.docker .env
+psql -U ravi -d vector_db
+\dt
 ```
 
-Edit `.env` file with your API keys:
+#### Step 5: Test Sample Query
+
 ```bash
-nano .env  # or use your preferred editor
+uv run python -m tools.run query "specifically in Article (137)"
 ```
 
-**Required API Keys:**
-- `GEMINI_API_KEY`: Get from Google AI Studio
-- `GROQ_API_KEY`: Get from Groq Console
-- `OPENAI_API_KEY`: Get from OpenAI Platform
-- `SERPER_API_KEY`: Get from Serper.dev
+### Phase 3: Agentic Workflows & API
 
-#### Step 2: Create Required Directories
+#### Step 1: Switch to CrewAI Environment
+
+Replace the pyproject.toml with CrewAI version and sync:
+
 ```bash
-# Create directories that will be mounted as volumes
-mkdir -p resources artifacts docker config
+# Replace pyproject.toml with CrewAI version (included in repo)
+uv sync
 ```
 
-#### Step 3: Build and Start Services
+#### Step 2: Setup Phoenix Observability
+
+Start Phoenix container for real-time tracking:
+
 ```bash
-# Build and start all services in detached mode
-docker-compose up -d --build
+docker run -d \
+  -p 9090:9090 \
+  -p 6006:6006 \
+  -p 4317:4317 \
+  --name phoenix \
+  --restart always \
+  arizephoenix/phoenix:latest
 ```
 
-**What happens during this step:**
-- **PostgreSQL**: Starts with PGVector extension enabled
-- **Ollama**: Starts local LLM inference service
-- **RAG App**: Builds your application image and starts the API server
-- **Phoenix**: Starts observability dashboard (optional)
-
-#### Step 4: Verify Services are Running
+Verify Phoenix is running:
 ```bash
-# Check all containers are healthy
-docker-compose ps
-
-# Check logs
-docker-compose logs rag_app
-docker-compose logs postgres
-docker-compose logs ollama
+docker ps --filter "name=phoenix"
 ```
 
-#### Step 5: Download Ollama Models
+Access Phoenix at: http://localhost:6006
+
+#### Step 3: Start FastAPI Server
+
+Launch the API endpoints:
+
 ```bash
-# Enter Ollama container
-docker-compose exec ollama bash
-
-# Download required models
-#ollama pull llama3.1:8b
-ollama pull nomic-embed-text
-ollama pull gemma3:1b
-
-# Exit container
-exit
+uv run -m contextual_rag.model.inference.api.main
 ```
 
-#### Step 6: Process Your Documents
+Access Swagger documentation at: http://localhost:8000
 
-Add your documents to the resources folder:
+#### Step 4: Setup OpenWebUI
+
+Setup the chat interface:
+
 ```bash
-cp your_documents.pdf resources/
+# Stop existing container if running
+docker stop open-webui && docker rm open-webui
+
+# Start OpenWebUI
+docker run -d \
+  -p 3000:8080 \
+  --add-host=host.docker.internal:host-gateway \
+  -e OPENAI_API_BASE_URL=http://host.docker.internal:8000/v1 \
+  -e OPENAI_API_KEY=dummy-key \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  --restart always \
+  ghcr.io/open-webui/open-webui:main
 ```
 
-Run the RAG pipeline:
+Access OpenWebUI at: http://localhost:3000
+
+## 📁 Project Structure
+
+```
+Contextual_RAG_Chatbot/
+├── configs/                    # Configuration files
+├── contextual_rag/
+│   ├── application/           # Application layer
+│   │   ├── agents/           # CrewAI agents and tools
+│   │   ├── extractors/       # Document extraction
+│   │   ├── preprocessing/    # Data preprocessing
+│   │   └── rag/             # RAG implementation
+│   ├── infrastructure/       # Infrastructure components
+│   └── model/               # ML models and API
+├── data/
+│   ├── artifacts/           # Generated chunks
+│   └── markdown/           # Processed documents
+├── pipelines/              # ZenML pipelines
+├── resources/              # Source documents
+├── steps/                  # Pipeline steps
+└── tools/                  # Utility scripts
+```
+
+## 🔧 Configuration
+
+### Database Configuration (configs/config.yaml)
+Configure your PostgreSQL connection settings in the config file.
+
+### Agent Configuration (contextual_rag/application/agents/crew/config/)
+- `agents.yaml`: Define AI agents and their roles
+- `tasks.yaml`: Configure agent tasks and workflows
+
+## 🧪 Testing
+
+Run various tests to verify functionality:
+
 ```bash
-# Process documents and create embeddings
-docker-compose exec rag_app uv run rag_pipeline/main.py
+# Test basic functionality
+python tests/simple_run.py
 
-# Or re-embed existing data
-docker-compose exec rag_app uv run rag_pipeline/main.py --re-embed
+# Test RAG components
+python tests/test_rag.py
+
+# Test document conversion
+python tests/test_document_conversion.py
+
+# Test evaluation metrics
+python tests/test_ragas.py
 ```
 
-### 🎯 Using the Docker Application
+## 📊 Evaluation
 
-#### API Endpoints
-Once running, your API will be available at:
-- **Main API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-- **Phoenix Dashboard**: http://localhost:6006 (for observability)
+The system includes RAGAS evaluation metrics for assessing RAG performance:
 
-#### Available Endpoints
-
-**Basic RAG**: POST `/rag`
 ```bash
-curl -X POST "http://localhost:8000/rag" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "What are the procurement standards?"}'
+# Run evaluation
+python -m contextual_rag.model.evaluation.ragas
 ```
 
-**Agentic RAG with CrewAI**: POST `/agentic_rag`
-```bash
-curl -X POST "http://localhost:8000/agentic_rag" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "How should vendors be evaluated?"}'
-```
+## 🔍 Monitoring & Observability
 
-**Get Relevant Chunks**: POST `/relevant_chunks`
-```bash
-curl -X POST "http://localhost:8000/relevant_chunks" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "What is the approval process?"}'
-```
+- **Phoenix**: Real-time tracing and monitoring at http://localhost:6006
+- **ZenML Dashboard**: Pipeline tracking and artifact management
+- **FastAPI Metrics**: API performance monitoring
 
-## Evaluation Framework
+## 🚀 Usage Examples
 
-The system includes comprehensive evaluation capabilities using both RAGAS and Phoenix frameworks to assess RAG performance across multiple dimensions.
+### API Usage
 
-### 📊 RAGAS Evaluation
-
-**RAGAS** (Retrieval Augmented Generation Assessment) provides automated evaluation of RAG systems using LLM-based metrics.
-
-#### Key Metrics Evaluated:
-- **Faithfulness**: Measures how grounded the generated answer is in the retrieved context
-- **Answer Relevancy**: Evaluates how relevant the generated answer is to the given question
-- **Context Precision**: Assesses the precision of retrieved context chunks
-- **Context Recall**: Measures the coverage of relevant information in retrieved context
-
-#### Running RAGAS Evaluation:
-```bash
-# Run RAGAS evaluation with predefined test queries
-uv run evaluation/ragas_evaluation.py
-
-# With custom CSV file containing RAG results
-uv run evaluation/ragas_evaluation.py --rag-results artifacts/rag_results.csv
-```
-
-#### RAGAS Configuration:
 ```python
-# Located in: evaluation/ragas_evaluation.py
-TEST_QUERIES = [
-    {
-        "question": "What are the procurement standards?",
-        "ground_truth": "Abu Dhabi procurement standards include transparency, competitiveness, and value for money."
-    },
-    # ... more test queries
-]
-```
+import requests
 
-#### Output:
-- **CSV Results**: `artifacts/ragas_evaluation_results.csv`
-- **Console Summary**: Metric averages and performance insights
-- **Best/Worst Queries**: Identification of top and bottom performing queries
-
-### 🔍 Phoenix Evaluation
-
-**Phoenix** provides observability and evaluation capabilities with real-time tracing and comprehensive RAG assessment.
-
-#### Key Features:
-- **Live Tracing**: Real-time observation of RAG pipeline execution
-- **Hallucination Detection**: Identifies potential hallucinations in generated responses
-- **QA Correctness**: Evaluates the correctness of question-answering
-- **Relevance Assessment**: Measures relevance of retrieved documents
-- **Interactive Dashboard**: Web-based interface for evaluation exploration
-
-#### Running Phoenix Evaluation:
-```bash
-# Start Phoenix evaluation with dashboard
-uv run evaluation/phoenix_evaluation.py
-```
-
-#### Phoenix Dashboard:
-Once running, access the Phoenix dashboard at:
-- **Dashboard URL**: http://localhost:6006
-- **Trace Exploration**: Interactive trace analysis
-- **Metric Visualization**: Charts and graphs of evaluation metrics
-- **Document Analysis**: Detailed context and retrieval analysis
-
-#### Evaluation Outputs:
-- **Queries DataFrame**: `artifacts/queries_df.csv`
-- **Retrieved Documents**: `artifacts/retrieved_documents_df.csv`
-- **Hallucination Evaluation**: `artifacts/hallucination_eval_df.csv`
-- **QA Evaluation**: `artifacts/qa_eval_df.csv`
-- **Relevance Evaluation**: `artifacts/relevance_eval_df.csv`
-
-### 📈 Evaluation Workflow
-
-#### 1. Setup Evaluation Environment
-```bash
-# Ensure artifacts directory exists
-mkdir -p artifacts
-
-# Set required API keys for evaluation models
-export OPENAI_API_KEY="your-openai-key"  # Required for both RAGAS and Phoenix
-```
-
-#### 2. Prepare Test Dataset
-```python
-# Define your evaluation queries
-test_queries = [
-    {
-        "question": "Your test question",
-        "ground_truth": "Expected answer (optional)"
-    }
-]
-```
-
-#### 3. Run Comprehensive Evaluation
-```bash
-# Run both evaluation frameworks
-uv run evaluation/ragas_evaluation.py
-uv run evaluation/phoenix_evaluation.py
-
-# Or run evaluation on existing RAG results
-uv run evaluation/ragas_evaluation.py --rag-results artifacts/previous_results.csv
-```
-
-#### 4. Analyze Results
-```bash
-# View RAGAS results
-cat artifacts/ragas_evaluation_results.csv
-
-# Open Phoenix dashboard for interactive analysis
-# Navigate to http://localhost:6006
-```
-
-### 🎯 Evaluation Best Practices
-
-#### Test Query Design:
-- **Diverse Topics**: Cover all major document themes
-- **Varying Complexity**: Include simple facts and complex reasoning questions
-- **Edge Cases**: Test boundary conditions and potential failure modes
-- **Ground Truth**: Provide expected answers when possible for accurate assessment
-
-#### Continuous Evaluation:
-```bash
-# Set up automated evaluation pipeline
-# Run evaluation after each model or configuration change
-uv run evaluation/ragas_evaluation.py
-uv run evaluation/phoenix_evaluation.py
-
-# Compare results across different configurations
-diff artifacts/ragas_evaluation_results_v1.csv artifacts/ragas_evaluation_results_v2.csv
-```
-
-#### Performance Monitoring:
-- **Baseline Establishment**: Run initial evaluation to establish performance baselines
-- **Regular Assessment**: Periodic evaluation to detect performance drift
-- **A/B Testing**: Compare different configurations using evaluation metrics
-- **Error Analysis**: Deep dive into low-scoring queries for system improvement
-
-## About Contextual RAG Chatbot
-
-A comprehensive Retrieval-Augmented Generation (RAG) system that combines multiple advanced techniques for document processing, semantic search, and intelligent response generation. This implementation features contextual embedding enhancement, multi-model fallback systems, and agentic workflows for robust document Q&A capabilities.
-
-## Implementation Approaches
-
-### 1. Document Processing
-**Approach Used: Docling-based Multi-format Document Conversion**
-
-The system employs Docling (`langchain_docling`) as the primary document processing engine, which provides robust conversion capabilities for various document formats into structured markdown.
-
-**Key Features:**
-- **Universal Format Support**: Handles PDFs, Word documents, and other common formats
-- **Structured Output**: Converts documents to clean markdown format preserving hierarchical structure
-- **Metadata Preservation**: Maintains document metadata throughout the conversion process
-- **Error Handling**: Robust error handling for corrupted or complex documents
-
-**Implementation Details:**
-```python
-# Located in: rag_pipeline/data_extraction.py
-loader = DoclingLoader(file_path=file_path, export_type=ExportType.MARKDOWN)
-docs = loader.load()
-```
-
-### 2. Docling Data Pipeline & Storage
-**Approach Used: Incremental Processing with Hash-based Change Detection**
-
-The pipeline implements an efficient incremental processing system that only processes new or modified documents, significantly reducing processing time and computational overhead.
-
-**Key Features:**
-- **File Hash Monitoring**: SHA256-based file change detection system
-- **Incremental Processing**: Only processes new or modified files
-- **Artifact Management**: Organized storage of processed markdown files
-- **Progress Tracking**: Resumable processing with progress persistence
-- **Graceful Interruption**: Signal handling for safe pipeline interruption
-
-**Implementation Details:**
-```python
-# Located in: rag_pipeline/file_hash_manager.py
-class FileHashManager:
-    def get_changed_or_new_files(self, resources_folder: str) -> Set[str]:
-        # Returns only files that have changed or are new
-```
-
-### 3. LlamaIndex + PGVector/PostgreSQL RAG Methodology
-**Approach Used: Production-grade Vector Storage with LlamaIndex Integration**
-
-The system leverages LlamaIndex's robust framework combined with PostgreSQL's PGVector extension for scalable, persistent vector storage and retrieval.
-
-**Key Features:**
-- **Scalable Vector Storage**: PostgreSQL with PGVector extension for production-grade performance
-- **LlamaIndex Integration**: Seamless document indexing and querying capabilities
-- **Configurable Similarity Search**: HNSW indexing for efficient similarity searches
-- **Persistent Storage**: Durable storage that survives application restarts
-- **Metadata Filtering**: Rich metadata support for advanced filtering and retrieval
-
-**Implementation Details:**
-```python
-# Located in: rag_pipeline/embedding_storage.py
-vector_store = PGVectorStore.from_params(
-    database=url.database,
-    host=url.host,
-    password=url.password,
-    port=url.port,
-    user=url.username,
-    table_name=db_config['table_name'],
-    embed_dim=embedding_config.get('dimension', 768),
-    hnsw_kwargs=db_config.get('hnsw_kwargs', {}),
+# Query the RAG system
+response = requests.post(
+    "http://localhost:8000/rag/query",
+    json={"query": "What are the HR policies regarding leave?"}
 )
+print(response.json())
 ```
 
-### 4. Contextual RAG (Anthropic-style) 
-**Approach Used: Multi-stage Contextual Enhancement with Intelligent Chunking**
+### Direct Python Usage
 
-Inspired by Anthropic's contextual retrieval approach, this implementation enhances document chunks with contextual information to improve retrieval accuracy.
-
-**Key Features:**
-- **Semantic Chunking**: LLM-guided intelligent document segmentation that preserves topic boundaries
-- **Contextual Enhancement**: Each chunk is enriched with context about its position within the larger document
-- **Multi-document Context**: Handles large documents by processing them in segments and combining contexts
-- **Fallback Resilience**: Multi-model fallback system ensures processing continues even if primary models fail
-
-**Implementation Details:**
 ```python
-# Located in: rag_pipeline/contextual_retrieval.py
-def get_context_for_chunk(whole_document: str, chunk_content: str, config: ConfigManager):
-    # Generates contextual information for each chunk
-    # Uses prompt template to situate chunk within document context
+from contextual_rag.application.rag.rag import RAG
+
+rag = RAG()
+answer = rag.answer_question("What are the company bylaws?")
+print(answer)
 ```
 
-**Semantic Chunking Process:**
-```python
-# Located in: rag_pipeline/chunking.py
-def semantic_merge(text: str, config: ConfigManager) -> list[str]:
-    # Uses LLM to detect topic boundaries and create semantically coherent chunks
-```
+## 🤝 Contributing
 
-### 5. Embedding / LLM / Re-ranking Models
-**Approach Used: Multi-tier Model Architecture with Local and Cloud Integration**
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
 
-The system implements a sophisticated multi-tier approach combining local and cloud-based models for optimal performance, cost-effectiveness, and reliability.
+## 📄 License
 
-**Embedding Models:**
-- **Primary**: Ollama-hosted `nomic-embed-text` (768-dimensional embeddings)
-- **Local Processing**: All embeddings generated locally for privacy and speed
+This project is licensed under the MIT License.
 
-**LLM Models (Multi-tier Fallback):**
-- **Primary**: Ollama-hosted models (Llama 3.1, Gemma 3)
-- **Secondary**: Google Gemini (gemini-2.5-flash)
-- **Tertiary**: Groq (llama-3.3-70b-versatile)
-- **Quaternary**: AWS Bedrock (Claude)
+## 🆘 Troubleshooting
 
-**Re-ranking Implementation:**
-```python
-# Located in: agentic_rag/ollama_reranker.py
-class OllamaReRanker:
-    def rerank(self, query: str, documents: List[str], top_k: int = 5):
-        # Uses local Ollama model to score and re-rank retrieved documents
-```
+### Common Issues
 
-**Key Features:**
-- **Local-First Approach**: Primary processing on local models for privacy
-- **Intelligent Fallback**: Automatic failover to cloud models when local models are unavailable
-- **Re-ranking Enhancement**: Secondary relevance scoring to improve result quality
-- **Cost Optimization**: Balances performance with API costs through strategic model selection
+1. **ZenML Server Issues**: Clear server data and restart
+2. **PostgreSQL Connection**: Verify credentials and pgvector extension
+3. **Docker Containers**: Check port availability and container status
+4. **Dependency Conflicts**: Use appropriate pyproject.toml for each phase
 
-### 6. Locally Hosted Models via Ollama
-**Approach Used: Self-hosted Model Infrastructure with Docker-like Simplicity**
+### Getting Help
 
-The system leverages Ollama as the primary local model hosting solution, providing privacy, cost-effectiveness, and reliability for core operations.
+- Check the troubleshooting sections above
+- Review test files for usage examples
+- Open an issue on GitHub for bugs or feature requests
 
-**Key Features:**
-- **Privacy-First**: All sensitive operations processed locally
-- **Cost Effective**: No per-token charges for primary operations
-- **Model Diversity**: Support for multiple model types (embedding, chat, specialized)
-- **Easy Management**: Simple model switching and version control
-- **Performance Optimization**: Local processing eliminates network latency
+## 🔗 Related Documentation
 
-**Supported Local Models:**
-- **Embedding**: `nomic-embed-text` - High-quality text embeddings
-- **Chat**: `llama3.1:8b`, `gemma3` - General purpose conversation
-- **Specialized**: Various models for specific tasks (chunking, re-ranking)
-
-**Implementation Details:**
-```python
-# Located in: llm/llm.py
-def generate_content(provider: str, model_name: str, prompt: str) -> str:
-    if provider.lower() == "ollama":
-        response = requests.post(OLLAMA_GENERATE_URL, json={
-            "model": model_name,
-            "messages": [{"role": "user", "content": prompt}],
-            "stream": False
-        }, timeout=120)
-```
-
-### 7. Agentic Framework
-**Approach Used: CrewAI-based Multi-Agent Orchestration**
-
-The system implements an intelligent multi-agent framework using CrewAI that coordinates specialized agents for complex query handling and response synthesis.
-
-**Agent Architecture:**
-- **Retriever Agent**: Specializes in document search and knowledge retrieval
-- **Response Synthesizer Agent**: Focuses on coherent response generation
-- **Coordinator Logic**: Orchestrates agent interactions and task delegation
-
-**Key Features:**
-- **Specialized Roles**: Each agent has specific expertise and tools
-- **Dynamic Tool Selection**: Agents can choose between RAG search and web search
-- **Hierarchical Processing**: Sequential task execution with context passing
-- **Fallback Mechanisms**: Web search when local knowledge is insufficient
-
-**Implementation Details:**
-```python
-# Located in: agentic_rag/crew.py
-@CrewBase
-class AgenticRag:
-    @agent
-    def retriever_agent(self) -> Agent:
-        return Agent(
-            config=self.agents_config['retriever_agent'],
-            tools=[self.rag_tool_instance, web_search_tool],
-            llm=llm
-        )
-```
-
-### 8. Prompt Optimization
-**Approach Used: Template-based Prompt Engineering with Context-Aware Design**
-
-The system employs carefully crafted prompt templates optimized for different stages of the RAG pipeline, ensuring consistent and high-quality outputs.
-
-**Key Optimization Strategies:**
-- **Context-Aware Prompts**: Different templates for different document sizes and complexities
-- **Few-shot Learning**: Examples embedded in prompts for better model understanding
-- **Role-based Prompting**: Clear role definitions for different agents and tasks
-- **Output Formatting**: Structured prompts that ensure consistent output formats
-
-**Contextual Retrieval Prompt:**
-```python
-prompt_template = """
-<document>
-{{WHOLE_DOCUMENT}}
-</document>
-Here is the chunk we want to situate within the whole document
-<chunk>
-{{CHUNK_CONTENT}}
-</chunk>
-Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk. Answer only with the succinct context and nothing else.
-"""
-```
-
-**Agent-Specific Prompts:**
-```yaml
-# Located in: agentic_rag/config/agents.yaml
-retriever_agent:
-  role: >
-    Retrieve relevant information to answer the user query
-  goal: >
-    Always try to use the rag search tool first. If unable to retrieve information, use web search tool
-  backstory: >
-    You're a meticulous analyst with a keen eye for detail
-```
-
-## Architecture Overview
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Documents     │───▶│  Docling Pipeline│───▶│  Markdown Files │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ Semantic Chunks │◀───│ Contextual RAG   │───▶│ Enhanced Chunks │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Embeddings    │◀───│ Ollama + PGVector│───▶│  Vector Storage │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  Query Results  │◀───│ Multi-Agent RAG  │───▶│   Final Answer  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-```
-
-## Key Features
-
-- **🔄 Incremental Processing**: Only processes new or modified documents
-- **🧠 Contextual Enhancement**: Anthropic-style contextual retrieval for improved accuracy  
-- **🏠 Privacy-First**: Local model hosting with Ollama for sensitive operations
-- **🎯 Intelligent Re-ranking**: Secondary relevance scoring with local models
-- **🤖 Multi-Agent System**: CrewAI-powered agentic workflow for complex queries
-- **📊 Production Ready**: PostgreSQL + PGVector for scalable vector storage
-- **🛡️ Robust Fallbacks**: Multi-tier model architecture ensures high availability
-- **📈 Resumable Processing**: Progress tracking allows interruption and continuation
-- **🔍 Comprehensive Evaluation**: RAGAS and Phoenix frameworks for thorough assessment
-- **🐳 Docker Support**: Containerized deployment for easy setup and scaling
-
-This implementation combines cutting-edge RAG techniques with practical engineering considerations, resulting in a robust, scalable, and privacy-conscious document Q&A system with comprehensive evaluation capabilities.
+- [OpenWebUI Integration Guide](OpenWebUI_and_FastAPI_intergration.docx)
+- [ZenML Documentation](https://docs.zenml.io)
+- [CrewAI Documentation](https://docs.crewai.com)
+- [pgvector Documentation](https://github.com/pgvector/pgvector)
