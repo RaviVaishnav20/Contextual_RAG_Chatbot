@@ -22,4 +22,5 @@ dependencies = [
     "ragas>=0.3.5",
     "fastapi>=0.117.1",
     "openinference-instrumentation-llama-index>=4.3.5",
+    "arize-phoenix-otel>=0.13.1",
 ]
