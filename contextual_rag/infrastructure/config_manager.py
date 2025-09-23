@@ -105,6 +105,9 @@ class ConfigManager:
             content = self._substitute_env_vars(content)
             return yaml.safe_load(content) or {}
 
+    def get_phoenix_config(self) -> Dict[str, Any]:
+        return self.config.get("phoenix", {})
+
     # def get_directories(self) -> Dict[str, str]:
     #     return self.config.get("directories", {})
 

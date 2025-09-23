@@ -16,7 +16,10 @@ class Settings:
     metadata_sementic_chunk_file = artifacts_dir / "metadata_sementic_chunk.json"
     metadata_context_chunk_file = artifacts_dir / "metadata_context_chunk.json"
     chunk_metadata_file = metadata_context_chunk_file
-    crew_dir = project_root/"contextual_rag"/"application"/"agents"/"crew"
+    rag_metadata_file = artifacts_dir / "rag_metadata_file.csv"
+    crew_dir = project_root/"contextual_rag" / "application"/"agents"/"crew"
+    ragas_evaluation_report = artifacts_dir / "ragas_evaluation_report.csv"
+    ragas_metadata_file = artifacts_dir / "ragas_metadata_file.csv"
 
     # Database configuration - uses new config system with fallback
     postgres_dsn: str = (

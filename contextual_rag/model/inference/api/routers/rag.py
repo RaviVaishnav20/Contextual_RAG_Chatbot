@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from openwebui.models import Query, RAGResponse, AgenticResponse, ChunksResponse
-from utils.helpers import generate_ids, extract_contexts_from_retrieved_text, run_ragas_evaluation, get_trace_id
-from utils.tracing import conditional_span
-from agentic_rag.rag_rerank import get_rag_response, get_relevant_chunks_with_reranking
-from agentic_rag.crew import AgenticRag
+from contextual_rag.model.inference.api.models import Query, RAGResponse, AgenticResponse, ChunksResponse
+from contextual_rag.utils.helpers import generate_ids, run_ragas_evaluation, get_trace_id
+from contextual_rag.utils.tracing import conditional_span
+from contextual_rag.application.rag.rag import get_rag_answer, get_relevant_chunks_with_reranking
+from contextual_rag.application.agents.crew.crew import AgenticRag
 import asyncio, time, traceback
 from openinference.semconv.trace import SpanAttributes
 import os
-
+ 
 router = APIRouter()
 
 @router.post("/rag", response_model=RAGResponse)
@@ -31,14 +31,14 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
         try:
             # Get RAG response with timeout
             response = await asyncio.wait_for(
-                get_rag_response(query.query), 
+                get_rag_answer(query.query),
                 timeout=120  # 2 minute timeout
             )
             response_time = time.time() - start_time
             
             # Set output attributes if tracing
             if query.evaluate:
-                span.set_attribute(SpanAttributes.OUTPUT_VALUE, response["llm_response"])
+                span.set_attribute(SpanAttributes.OUTPUT_VALUE, response[0])
                 span.set_attribute("response_time", response_time)
             
             # Get trace ID
@@ -47,12 +47,12 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             # Handle evaluation
             evaluation_result = None
             if query.evaluate and os.getenv("OPENAI_API_KEY"):
-                contexts = extract_contexts_from_retrieved_text(response["retrieved_text"])
+                contexts = response[1]
                 
                 background_tasks.add_task(
                     run_ragas_evaluation, 
                     query.query, 
-                    response["llm_response"], 
+                    response[0], 
                     contexts, 
                     query.reference_answer
                 )
@@ -63,8 +63,8 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
                 }
             
             return RAGResponse(
-                retrieved_text=response["retrieved_text"],
-                llm_response=response["llm_response"],
+                retrieved_text=response[1],
+                llm_response=response[0],
                 response_time=response_time,
                 session_id=session_id,
                 query_id=query_id,
@@ -105,12 +105,12 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             if query.evaluate:
                 with conditional_span("crew_kickoff", True, query=query.query):
                     response = await asyncio.wait_for(
-                        asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew_with_context, query.query)),
+                        asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
                         timeout=180  # 3 minute timeout for agentic RAG
                     )
             else:
                 response = await asyncio.wait_for(
-                    asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew_with_context, query.query)),
+                    asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
                     timeout=180
                 )
                 
@@ -118,9 +118,8 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             
             # Set output attributes if tracing
             if query.evaluate:
-                span.set_attribute(SpanAttributes.OUTPUT_VALUE, str(response["response"]))
+                span.set_attribute(SpanAttributes.OUTPUT_VALUE, str(response))
                 span.set_attribute("response_time", response_time)
-                span.set_attribute("context_length_chars", len(response.get("context", "")))
             
             # Get trace ID
             trace_id = get_trace_id(span) if query.evaluate else None
@@ -128,13 +127,13 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             # Handle evaluation
             evaluation_result = None
             if query.evaluate and os.getenv("OPENAI_API_KEY"):
-                contexts = extract_contexts_from_retrieved_text(response["context"])
+         
                 
                 background_tasks.add_task(
                     run_ragas_evaluation, 
                     query.query, 
-                    str(response["response"]), 
-                    contexts, 
+                    str(response), 
+                    [], 
                     query.reference_answer
                 )
                 
@@ -144,8 +143,7 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
                 }
             
             return AgenticResponse(
-                context=response["context"],
-                response=str(response["response"]),
+                response=str(response),
                 response_time=response_time,
                 session_id=session_id,
                 query_id=query_id,
@@ -186,10 +184,10 @@ async def relevant_chunks_endpoint(query: Query):
             
             if query.evaluate:
                 span.set_attribute("response_time", response_time)
-                span.set_attribute("chunks_retrieved", len(extract_contexts_from_retrieved_text(response["retrieved_text"])))
+                span.set_attribute("chunks_retrieved", len(response[1]))
             
             return ChunksResponse(
-                retrieved_text=response["retrieved_text"],
+                retrieved_text=response,
                 response_time=response_time,
                 session_id=session_id,
                 query_id=query_id

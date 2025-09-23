@@ -8,7 +8,7 @@ import signal
 from contextual_rag.infrastructure.llm import generate_content
 from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.settings import settings
-
+from tqdm import tqdm
 class TimeoutError(Exception):
     pass
 
@@ -134,7 +134,7 @@ def build_chunks(path: Path) -> List[Chunk]:
             )
     return all_chunks
 
-def _summarize_and_deduplicate_context(contexts: list[str], config: ConfigManager, timeout_seconds: int = 60) -> str:
+def _summarize_and_deduplicate_context(contexts: list[str]) -> str:
     """Summarizes and de-duplicates a list of contexts using an LLM call with timeout."""
     if not contexts:
         return ""
@@ -301,7 +301,7 @@ def get_context_for_chunk(whole_document: str, chunk_content: str, timeout_secon
 
         if generated_contexts_for_segments:
             print(f"    🔗 Combining {len(generated_contexts_for_segments)} segment contexts...")
-            final_context = _summarize_and_deduplicate_context(generated_contexts_for_segments, config, timeout_seconds)
+            final_context = _summarize_and_deduplicate_context(generated_contexts_for_segments)
         else:
             final_context = ""
 
@@ -356,7 +356,7 @@ def build_chunks_context(path: Path, sementic_chunk:List[Chunk]) -> List[Chunk]:
 
     whole_document = path.read_text(encoding="utf-8")
     document_name = path.name
-    for i, c in enumerate(sementic_chunk):
+    for i, c in enumerate(tqdm(sementic_chunk)):
         chunk_content = c.text
         context = get_context_for_chunk(whole_document, chunk_content)
         new_chunk = context + chunk_content

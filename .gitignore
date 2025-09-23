@@ -13,8 +13,10 @@ wheels/
 
 # macOS specific files
 .DS_Store
-artifacts/metadata_chunk.json
+# artifacts/metadata_chunk.json
 experiments/
 .env.docker
-resources/
+.vscode
+# .zen
 data/
+resources/

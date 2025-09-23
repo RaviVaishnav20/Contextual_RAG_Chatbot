@@ -28,7 +28,7 @@ class RagTool(BaseTool):
         super().__init__()
        
     
-    def _run(self, query: str) -> str:
+    async def _run(self, query: str) -> str:
         """Search the document for context and generate answer"""
         if isinstance(query, dict) and 'description' in query:
             query_string = query['description']
@@ -36,7 +36,8 @@ class RagTool(BaseTool):
             query_string = str(query)
              
         try:
-           response = get_rag_answer(query_string)
+           results = await get_rag_answer(query_string)
+           response = results[0]
            return response  
         except Exception as e:
             return f"Error in enhanced search: {str(e)}"

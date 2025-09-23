@@ -23,5 +23,4 @@ if __name__=="__main__":
     candidates = retrieve_with_llama_index(query)
     ranked_context = rerank_step(query, candidates)
 
-    question = "Definitions, scope of application, and delegation of powers"
-    test_answer(ranked_context, question)
+    test_answer(ranked_context, query)

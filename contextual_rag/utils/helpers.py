@@ -1,9 +1,3 @@
-import sys
-from pathlib import Path
-ROOT = Path(__file__).resolve().parents[1]  # go up 1 more level (project root)
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
-
 import os
 from dotenv import load_dotenv
 import time
@@ -11,14 +5,14 @@ import requests
 import uuid
 from sqlalchemy import create_engine, text
 # Local imports
-from agentic_rag.rag_rerank import get_relevant_chunks_with_reranking
-from openwebui.models import HealthStatus
-from agentic_rag.eval.ragas import RAGASEvaluator
-from config.config_manager import ConfigManager
+from contextual_rag.application.rag.rag import get_rag_answer
+from contextual_rag.model.inference.api.models import HealthStatus
+from contextual_rag.model.evaluation.ragas import RagasEvaluator
+from contextual_rag.infrastructure.config_manager import ConfigManager
 from typing import Optional, List
 # Load variables from .env into environment
 load_dotenv()
-config = ConfigManager()
+cm = ConfigManager()
 ragas_evaluator = None
 
 # Health Check Functions
@@ -26,7 +20,7 @@ async def check_ollama_health() -> HealthStatus:
     """Check Ollama service health"""
     start_time = time.time()
     try:
-        ollama_host = config.get_ollama_host()
+        ollama_host = cm.get_ollama_host()
         
         # Check if Ollama is responding
         response = requests.get(f"{ollama_host}/api/tags", timeout=10)
@@ -64,11 +58,17 @@ async def check_postgres_health() -> HealthStatus:
     """Check PostgreSQL database health"""
     start_time = time.time()
     try:
-        db_host = os.getenv("DATABASE_HOST", "localhost")
-        db_port = os.getenv("DATABASE_PORT", "5433")
-        db_name = os.getenv("DATABASE_NAME", "vector_db")
-        db_user = os.getenv("DATABASE_USER", "ravi")
-        db_password = os.getenv("DATABASE_PASSWORD", "password")
+        db_cfg = cm.get_database_config() or {}
+        
+        db_host = db_cfg.get('host', 'localhost')
+        db_port = db_cfg.get('port', '5432')
+        db_name = db_cfg.get('database', 'vector_db')
+        db_table_name = db_cfg.get('table_name', 'test_embed')
+        db_user = db_cfg.get('user', 'ravi')
+        db_password = db_cfg.get('password', 'password')
+        db_hnsw_kwargs = db_cfg.get('hnsw_kwargs', {})
+
+        
         
         connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
         
@@ -84,11 +84,11 @@ async def check_postgres_health() -> HealthStatus:
             has_vector = vector_check.fetchone()[0]
             
             # Check if our table exists
-            table_name = os.getenv("DATABASE_TABLE_NAME", "contextual_embedding")
+            
             table_check = conn.execute(text(f"""
                 SELECT EXISTS (
                     SELECT FROM information_schema.tables 
-                    WHERE table_name = '{table_name}'
+                    WHERE table_name = '{db_table_name}'
                 )
             """))
             has_table = table_check.fetchone()[0]
@@ -103,7 +103,7 @@ async def check_postgres_health() -> HealthStatus:
                     "database": db_name,
                     "vector_extension": has_vector,
                     "embedding_table_exists": has_table,
-                    "table_name": table_name
+                    "table_name": db_table_name
                 },
                 response_time=response_time
             )
@@ -120,14 +120,17 @@ async def check_phoenix_health() -> HealthStatus:
     """Check Phoenix tracing service health"""
     start_time = time.time()
     try:
-        response = requests.get("http://phoenix:6006/health", timeout=5)
+        phoenix_cfg = cm.get_phoenix_config() or {}
+        endpoint = phoenix_cfg.get('tracing', {}).get('endpoint', 'http://localhost:6006')
+        health_endpoint = phoenix_cfg.get('tracing', {}).get('health_endpoint', 'http://localhost:6006/health')
+        response = requests.get(endpoint, timeout=5)
         response_time = time.time() - start_time
         
         if response.status_code == 200:
             return HealthStatus(
                 service="phoenix",
                 status="healthy",
-                details={"endpoint": "http://phoenix:6006"},
+                details={"endpoint": endpoint},
                 response_time=response_time
             )
         else:
@@ -152,16 +155,16 @@ async def check_rag_pipeline_health() -> HealthStatus:
     try:
         # Test with a simple query
         test_query = "test"
-        result = await get_relevant_chunks_with_reranking(test_query, initial_k=3, final_k=2)
+        result = await get_rag_answer(test_query)
         response_time = time.time() - start_time
         
-        if result and "retrieved_text" in result:
+        if len(result[0]) > 0:
             return HealthStatus(
                 service="rag_pipeline",
                 status="healthy",
                 details={
                     "test_query": test_query,
-                    "chunks_retrieved": len(extract_contexts_from_retrieved_text(result["retrieved_text"]))
+                    "answer": result[0]
                 },
                 response_time=response_time
             )
@@ -185,7 +188,7 @@ def get_ragas_evaluator():
     global ragas_evaluator
     if ragas_evaluator is None and os.getenv("OPENAI_API_KEY"):
         try:
-            ragas_evaluator = RAGASEvaluator()
+            ragas_evaluator = RagasEvaluator()
         except Exception as e:
             print(f"Failed to initialize RAGAS evaluator: {e}")
     return ragas_evaluator
@@ -220,11 +223,11 @@ def extract_contexts_from_retrieved_text(retrieved_text: str) -> List[str]:
     
     return contexts if contexts else [retrieved_text]
 
-async def run_ragas_evaluation(query: str, response: str, contexts: List[str], reference: str = ""):
+def run_ragas_evaluation(query: str, response: str, contexts: List[str], reference: str = ""):
     """Run RAGAS evaluation in background"""
     evaluator = get_ragas_evaluator()
     if evaluator:
-        return await evaluator.evaluate_response(query, response, contexts, reference)
+        return evaluator.evaluate_rag(query, response, contexts, reference)
     return None
 
 def get_trace_id(span) -> Optional[str]:

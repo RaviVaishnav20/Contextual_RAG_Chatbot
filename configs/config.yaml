@@ -40,7 +40,7 @@ database:
   database: "${DATABASE_NAME:-vector_db}"
   user: "${DATABASE_USER:-ravi}"
   password: "${DATABASE_PASSWORD:-password}"
-  table_name: "${DATABASE_TABLE_NAME:-test_embed}" 
+  table_name: "${DATABASE_TABLE_NAME:-test_dge_embed}" 
   hnsw_kwargs:
     hnsw_m: 16
     hnsw_ef_construction: 64
@@ -84,3 +84,10 @@ crew:
     fallback_model_name: "${CREW_FALLBACK_MODEL:-gemini-2.5-flash}" 
 
 
+phoenix:
+  tracing:
+    enabled: ${PHOENIX_TRACING_ENABLED:-true}
+    project_name: ${PHOENIX_PROJECT_NAME:-contextual_rag_chatbot}
+    endpoint: ${PHOENIX_ENDPOINT:-http://localhost:6006}
+    trace_endpoint: ${PHOENIX_TRACE_ENDPOINT:-http://localhost:6006/v1/traces}
+    health_endpoint: ${PHOENIX_HEALTH_ENDPOINT:-http://localhost:6006/health}

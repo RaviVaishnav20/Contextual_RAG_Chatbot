@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from openwebui.models import ChatCompletionRequest, Query
-from openwebui.routers.rag import agentic_rag_endpoint
+from contextual_rag.model.inference.api.models import ChatCompletionRequest, Query
+from contextual_rag.model.inference.api.routers.rag import agentic_rag_endpoint
 import time, traceback
 
 router = APIRouter()

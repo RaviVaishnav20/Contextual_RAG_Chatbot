@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from utils.helpers import check_ollama_health, check_postgres_health, check_phoenix_health, check_rag_pipeline_health
-from openwebui.models import HealthStatus
+from contextual_rag.utils.helpers import check_ollama_health, check_postgres_health, check_phoenix_health, check_rag_pipeline_health
+from contextual_rag.model.inference.api.models import HealthStatus
 from datetime import datetime
 import asyncio
 

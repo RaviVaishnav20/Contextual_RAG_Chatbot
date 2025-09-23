@@ -54,7 +54,7 @@ class AgenticRag:
             ],
             llm=llm,
             max_retry_limit=1,
-            max_iter=2
+            max_iter=1
         )
     
     @agent
@@ -91,7 +91,7 @@ class AgenticRag:
             verbose=True
         )
     
-    def run_crew_with_context(self, query: str) -> dict:
+    def run_crew(self, query: str):
         """Runs the AgenticRag crew and returns the final response."""
         if isinstance(query, dict) and 'description' in query:
             query_string = query['description']

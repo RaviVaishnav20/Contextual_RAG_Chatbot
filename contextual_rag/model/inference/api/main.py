@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from openwebui.routers import health, rag, openai_api, evaluation
+from contextual_rag.model.inference.api.routers import health, rag, openai_api
 
 app = FastAPI(
     title="Contextual RAG ChatBot API",
@@ -22,7 +22,7 @@ app.add_middleware(
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(rag.router, tags=["rag"])
 app.include_router(openai_api.router, prefix="/v1", tags=["openai"])
-app.include_router(evaluation.router, prefix="/evaluate", tags=["evaluation"])
+# app.include_router(evaluation.router, prefix="/evaluate", tags=["evaluation"])
 
 @app.get("/")
 async def root():

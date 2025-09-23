@@ -46,8 +46,8 @@ def generate_content(provider: str, model_name: str, prompt: str) -> str:
                 {"role": "user", "content": [{"type": "text", "text": prompt}]}
             ],
         }
-        model_id = os.getenv("MODEL_ID")
-        resp = client.invoke_model(modelId=model_id, body=json.dumps(request))
+        # model_id = os.getenv("MODEL_ID")
+        resp = client.invoke_model(modelId=model_name, body=json.dumps(request))
         body = json.loads(resp.get("body").read())
         return body["content"][0]["text"]
 

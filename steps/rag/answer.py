@@ -11,6 +11,6 @@ from contextual_rag.application.rag.generate_answer import generate_answer
 def answer_step(ranked_context: List[Tuple[Tuple[str, float, str], float]], question: str) -> str:
     if not ranked_context:
         return "No relevant context found."
-    answer = generate_answer(ranked_context, question)
+    response = generate_answer(ranked_context, question)
     
-    return answer
+    return response[0]

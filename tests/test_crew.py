@@ -4,5 +4,5 @@ if __name__=="__main__":
     query = "Definitions, scope of application, and delegation of powers"
     agentic_rag = AgenticRag()
 
-    reponse = agentic_rag.run_crew_with_context(query)
+    reponse = agentic_rag.run_crew(query)
     print(reponse)

@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, List, Literal
+from typing import Optional, Dict, Any, List, Literal, Tuple
 from pydantic import BaseModel, Field
 
 # Request/Response models
@@ -10,7 +10,7 @@ class Query(BaseModel):
     reference_answer: Optional[str] = Field(default="", description="Reference answer for evaluation")
 
 class RAGResponse(BaseModel):
-    retrieved_text: str
+    retrieved_text: list
     llm_response: str
     response_time: float
     session_id: str
@@ -19,7 +19,6 @@ class RAGResponse(BaseModel):
     phoenix_trace_id: Optional[str] = None
 
 class AgenticResponse(BaseModel):
-    context: str
     response: str
     response_time: float
     session_id: str
@@ -28,7 +27,7 @@ class AgenticResponse(BaseModel):
     phoenix_trace_id: Optional[str] = None
 
 class ChunksResponse(BaseModel):
-    retrieved_text: str
+    retrieved_text: List[Tuple[str, float]]
     response_time: float
     session_id: str
     query_id: str

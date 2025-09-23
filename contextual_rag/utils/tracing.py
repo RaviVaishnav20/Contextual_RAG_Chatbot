@@ -1,3 +1,4 @@
+from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextlib import contextmanager
 from openinference.instrumentation.llama_index import LlamaIndexInstrumentor
 from phoenix.otel import register
@@ -11,9 +12,14 @@ def initialize_tracing():
     global tracer_provider, tracer
     if tracer_provider is None:
         try:
+            cm = ConfigManager()
+            phoenix_cfg = cm.get_phoenix_config() or {}
+            project_name = phoenix_cfg.get('tracing', {}).get('project_name', 'contextual_rag_chatbot')
+            endpoint = phoenix_cfg.get('tracing', {}).get('trace_endpoint', 'http://localhost:6006/v1/traces')
+           
             tracer_provider = register(
-                project_name="contextual_rag_chatbot",
-                endpoint="http://phoenix:6006/v1/traces",
+                project_name=project_name,
+                endpoint=endpoint,
             )
             LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
             tracer = trace.get_tracer(__name__)
