@@ -12,14 +12,17 @@ class Settings:
     data_dir: Path = project_root / "data"
     raw_dir: Path = data_dir / "raw"
     markdown_dir: Path = data_dir / "markdown"
+    evaluation_dir: Path = data_dir / "evaluation"
     artifacts_dir: Path = data_dir / "artifacts"
     metadata_sementic_chunk_file = artifacts_dir / "metadata_sementic_chunk.json"
     metadata_context_chunk_file = artifacts_dir / "metadata_context_chunk.json"
     chunk_metadata_file = metadata_context_chunk_file
     rag_metadata_file = artifacts_dir / "rag_metadata_file.csv"
     crew_dir = project_root/"contextual_rag" / "application"/"agents"/"crew"
-    ragas_evaluation_report = artifacts_dir / "ragas_evaluation_report.csv"
+    ragas_evaluation_report = artifacts_dir / "ragas_evaluation_report.xlsx"
     ragas_metadata_file = artifacts_dir / "ragas_metadata_file.csv"
+    ragas_gt_dataset = evaluation_dir/"ragas_gt_data.json"
+    temp_ragas_gt_dataset = evaluation_dir/"temp_ragas_gt_data.json"
 
     # Database configuration - uses new config system with fallback
     postgres_dsn: str = (

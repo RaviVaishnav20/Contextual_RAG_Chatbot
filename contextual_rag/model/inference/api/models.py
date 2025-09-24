@@ -12,6 +12,7 @@ class Query(BaseModel):
 class RAGResponse(BaseModel):
     retrieved_text: list
     llm_response: str
+    sources: list
     response_time: float
     session_id: str
     query_id: str
@@ -27,7 +28,7 @@ class AgenticResponse(BaseModel):
     phoenix_trace_id: Optional[str] = None
 
 class ChunksResponse(BaseModel):
-    retrieved_text: List[Tuple[str, float]]
+    retrieved_text: List[Tuple[Tuple[str, float, str, str], float]]
     response_time: float
     session_id: str
     query_id: str

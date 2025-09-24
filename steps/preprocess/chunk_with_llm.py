@@ -7,7 +7,7 @@ from contextual_rag.infrastructure.materializers import ChunkListMaterializer
 from contextual_rag.settings import settings
 import os
 from pathlib import Path
-
+from tqdm import tqdm
 @step(output_materializers=ChunkListMaterializer)
 def chunk_with_llm_step(files: List[str]) -> List[Chunk]:
     metadata_sementic_chunk_file = settings.metadata_sementic_chunk_file
@@ -26,7 +26,7 @@ def chunk_with_llm_step(files: List[str]) -> List[Chunk]:
     # Build chunks for each file
     all_chunks: List[Chunk] = []
     if files:
-        for f in files:
+        for f in tqdm(files):
             p = Path(f)
             chunks_for_file = build_chunks(p)
             # Flatten

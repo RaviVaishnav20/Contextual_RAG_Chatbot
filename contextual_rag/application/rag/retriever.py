@@ -6,7 +6,7 @@ from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.application.preprocessing.embedding_data_handlers import CustomEmbedding, setup_pgvector_store   
 
 
-def retrieve_with_llama_index(query_text: str) -> List[Tuple[str, float, str]]:
+def retrieve_with_llama_index(query_text: str) -> List[Tuple[str, float, str,str]]:
     """
     Retrieve the most relevant chunks using LlamaIndex + PGVectorStore.
     Returns list of (chunk_id, score, text)
@@ -44,6 +44,7 @@ def retrieve_with_llama_index(query_text: str) -> List[Tuple[str, float, str]]:
         chunk_id = node.metadata.get("chunk_id", "")
         score = node.score  # similarity score
         text = node.text
-        output.append((chunk_id, float(score), text))
+        source = node.metadata.get("document_name", "")
+        output.append((chunk_id, float(score), text, source))
     # print(output)
     return output

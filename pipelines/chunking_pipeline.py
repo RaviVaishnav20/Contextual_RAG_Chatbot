@@ -35,6 +35,6 @@ def chunking_pipeline():
     #                 metadata=c["metadata"],
     #             ) for c in existing_chunks_json]  
     sementic_chunks = chunk_with_llm_step(files)   
-    contextual_chunks = chunk_with_context_step(files, sementic_chunks)
-    return contextual_chunks
+    # contextual_chunks = chunk_with_context_step(files, sementic_chunks)
+    return sementic_chunks
 

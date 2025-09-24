@@ -58,10 +58,10 @@ rag:
     similarity_top_k: 10
   reranker:
     primary_provider: "${RERANK_PRIMARY_PROVIDER:-ollama}"
-    primary_model_name: "${RERANK_PRIMARY_MODEL:-llama3:8b}"
+    primary_model_name: "${RERANK_PRIMARY_MODEL:-gemma3:1b}"
     fallback_provider: "${RERANK_FALLBACK_PROVIDER:-gemini}"
     fallback_model_name: "${RERANK_FALLBACK_MODEL:-gemini-2.5-flash}"
-    top_k: 5
+    top_k: 10
   rag_answer:
     primary_provider: "${RAG_PRIMARY_PROVIDER:-ollama}"
     primary_model_name: "${RAG_PRIMARY_MODEL:-llama3:8b}"

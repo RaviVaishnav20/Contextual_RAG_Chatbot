@@ -237,3 +237,4 @@ def get_trace_id(span) -> Optional[str]:
         return f"{span_context.trace_id:032x}" if span_context.trace_id != 0 else None
     except:
         return None
+

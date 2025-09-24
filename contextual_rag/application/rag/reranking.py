@@ -4,6 +4,7 @@ import re
 from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.infrastructure.llm import generate_content
 from tqdm import tqdm
+from contextual_rag.utils.misc import remove_think_portion
 class CandidateScorer:
     """Simple Ollama-based re-ranker for RAG pipeline"""
     
@@ -37,6 +38,7 @@ Score:"""
                 model_name=self.primary_model,
                 prompt=prompt
             ).strip()
+            score_text = remove_think_portion(score_text)
             print(f"score_text: {score_text}")
             score_match = re.search(r'(\d+\.?\d*)', score_text)
             if score_match:
@@ -54,7 +56,7 @@ Score:"""
                     model_name=self.fallback_model,
                     prompt=prompt
                 ).strip()
-                
+                score_text = remove_think_portion(score_text)
                 score_match = re.search(r'(\d+\.?\d*)', score_text)
                 if score_match:
                     score = float(score_match.group(1))
@@ -68,7 +70,7 @@ Score:"""
                 return 0.5
 
         
-def rerank(query: str, candidates: List[Tuple[str, float, str]]) -> List[Tuple[Tuple[str, float, str], float]]:
+def rerank(query: str, candidates: List[Tuple[str, float, str, str]]) -> List[Tuple[Tuple[str, float, str, str], float]]:
     """Re-rank documents by relevance"""
     if not candidates:
         return []

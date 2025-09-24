@@ -65,8 +65,8 @@ class RagasEvaluator:
                 response = results[0],
                 reference = ground_truth
             ))
-        print("dataset_list")
-        print(dataset_list)
+        # print("dataset_list")
+        # print(dataset_list)
         evaluation_dataset = EvaluationDataset(dataset_list)
         return evaluation_dataset
 
@@ -135,7 +135,8 @@ class RagasEvaluator:
         
         result_df = result.to_pandas()
         ragas_evaluation_report = settings.ragas_evaluation_report
-        result_df.to_csv(ragas_evaluation_report, index=False)
+        # result_df.to_csv(ragas_evaluation_report, index=False)
+        result_df.to_excel(ragas_evaluation_report, sheet_name="Sheet1")
         return f"\n💾 Results saved to: {ragas_evaluation_report}"
 
     

@@ -13,7 +13,8 @@ async def list_models():
 @router.post("/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
     try:
-        user_msg = next((m for m in reversed(request.messages) if m.role == "user"), None)
+        all_u_msg = (m for m in reversed(request.messages) if m.role == "user")
+        user_msg = next(all_u_msg, None)
         if not user_msg:
             raise HTTPException(status_code=400, detail="No user message found")
         

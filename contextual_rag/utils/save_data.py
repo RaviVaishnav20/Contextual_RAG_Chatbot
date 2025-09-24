@@ -3,19 +3,27 @@ import os
 from contextual_rag.settings import settings
 import pandas as pd
 
-def save_rag_response(query: str, answer: str, context: str):
-    """Save a single RAG response to CSV (append if exists)."""
+def save_rag_response(query: str, answer: str, context: str, sources: str):
+    """Save a single RAG response to CSV (append if exists, create if not)."""
     rag_metadata_file = settings.rag_metadata_file
+    
+    # Ensure parent directory exists
+    os.makedirs(os.path.dirname(rag_metadata_file), exist_ok=True)
+    
     file_exists = os.path.isfile(rag_metadata_file)
     
     with open(rag_metadata_file, mode="a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["input", "output", "context"])
+        writer = csv.DictWriter(f, fieldnames=["input", "output", "context", "sources"])
         
-        # Write header if file is new
-        if not file_exists:
+        if not file_exists:  # File just created
             writer.writeheader()
         
-        writer.writerow({"input": query, "output": answer, "context": context})
+        writer.writerow({
+            "input": query, 
+            "output": answer, 
+            "context": context, 
+            "sources": sources
+        })
 
 
 

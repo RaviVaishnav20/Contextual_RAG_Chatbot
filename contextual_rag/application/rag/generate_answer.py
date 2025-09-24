@@ -1,28 +1,32 @@
 from contextual_rag.infrastructure.llm import generate_content
 from typing import List, Tuple
 from contextual_rag.infrastructure.config_manager import ConfigManager
-
-def synthesize_answer(contexts: List[Tuple[Tuple[str, float, str], float]], question: str) -> Tuple[str, List[str]]:
+from contextual_rag.utils.misc import remove_think_portion
+def synthesize_answer(contexts: List[Tuple[Tuple[str, float, str, str], float]], question: str) -> Tuple[str, List[str], List[str]]:
     # Placeholder answer synthesis
-    clean_context = [c[0][2] for c in contexts]
+    clean_context = [] # [c[0][2] for c in contexts]
+    sources = []
+    for c in contexts:
+        clean_context.append(str(c[0][2]).replace('chunk',''))
+        sources.append(str(c[0][3]).replace('.md',''))
     joined = "\n\n".join(clean_context)
+
+
     return (f"""
 You are an expert assistant. Answer the user's Query directly and clearly, 
 using the provided Context only as supporting information. 
-Do not mention 'chunks','documents', or analyze the context separately. 
-If the Context does not provide enough information, respond with 
-'I don't have enough information from the context to answer this query.'
+'
 
 ## Query:
 {question}
 
 ## Context:
 {joined}
-""", clean_context)
+""", clean_context, list(set(sources)))
 
 
 
-def generate_answer(contexts: List[Tuple[Tuple[str, float, str], float]], question: str) -> Tuple[str, List[str]]:
+def generate_answer(contexts: List[Tuple[Tuple[str, float, str, str], float]], question: str) -> Tuple[str, List[str], List[str]]:
     cm = ConfigManager()
     rag_cfg = cm.get_rag_config() or {}
     
@@ -34,6 +38,7 @@ def generate_answer(contexts: List[Tuple[Tuple[str, float, str], float]], questi
     synt_response = synthesize_answer(contexts, question)
     prompt = synt_response[0]
     clean_context = synt_response[1] 
+    sources = synt_response[2] 
     # print("prompt")
     # print(prompt)
     
@@ -46,7 +51,8 @@ def generate_answer(contexts: List[Tuple[Tuple[str, float, str], float]], questi
         # print("answer")
         # print(type(answer))
         # print(answer)
-        return (answer, clean_context)
+        answer = remove_think_portion(answer)
+        return (answer, clean_context, sources)
     except Exception as e:
         try:
             answer = generate_content(
@@ -54,6 +60,7 @@ def generate_answer(contexts: List[Tuple[Tuple[str, float, str], float]], questi
                 model_name=fallback_model,
                 prompt=prompt
             ).strip()
-            return (answer, clean_context)
+            answer = remove_think_portion(answer)
+            return (answer, clean_context, sources)
         except Exception as e:
             return (f"Unable generate answer for User query {e}", [""])

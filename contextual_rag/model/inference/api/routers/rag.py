@@ -32,7 +32,7 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             # Get RAG response with timeout
             response = await asyncio.wait_for(
                 get_rag_answer(query.query),
-                timeout=120  # 2 minute timeout
+                timeout=180  # 2 minute timeout
             )
             response_time = time.time() - start_time
             
@@ -65,6 +65,7 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             return RAGResponse(
                 retrieved_text=response[1],
                 llm_response=response[0],
+                sources=response[2],
                 response_time=response_time,
                 session_id=session_id,
                 query_id=query_id,
@@ -106,12 +107,12 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
                 with conditional_span("crew_kickoff", True, query=query.query):
                     response = await asyncio.wait_for(
                         asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
-                        timeout=180  # 3 minute timeout for agentic RAG
+                        timeout=300  # 3 minute timeout for agentic RAG
                     )
             else:
                 response = await asyncio.wait_for(
                     asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
-                    timeout=180
+                    timeout=300
                 )
                 
             response_time = time.time() - start_time
