@@ -61,8 +61,8 @@ class RagasEvaluator:
             
             dataset_list.append(SingleTurnSample(
                 user_input = question,
-                retrieved_contexts = results[1],
-                response = results[0],
+                retrieved_contexts = results.retrieved_contexts,
+                response = results.answer,
                 reference = ground_truth
             ))
         # print("dataset_list")

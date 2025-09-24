@@ -5,6 +5,8 @@ from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.infrastructure.llm import generate_content
 from tqdm import tqdm
 from contextual_rag.utils.misc import remove_think_portion
+from contextual_rag.application.rag.rag_model import RetrieverOutput, RerankedOutput
+
 class CandidateScorer:
     """Simple Ollama-based re-ranker for RAG pipeline"""
     
@@ -39,7 +41,7 @@ Score:"""
                 prompt=prompt
             ).strip()
             score_text = remove_think_portion(score_text)
-            print(f"score_text: {score_text}")
+            # print(f"score_text: {score_text}")
             score_match = re.search(r'(\d+\.?\d*)', score_text)
             if score_match:
                 score = float(score_match.group(1))
@@ -70,7 +72,7 @@ Score:"""
                 return 0.5
 
         
-def rerank(query: str, candidates: List[Tuple[str, float, str, str]]) -> List[Tuple[Tuple[str, float, str, str], float]]:
+def rerank(query: str, candidates: RetrieverOutput) -> List[RerankedOutput]:
     """Re-rank documents by relevance"""
     if not candidates:
         return []
@@ -83,9 +85,18 @@ def rerank(query: str, candidates: List[Tuple[str, float, str, str]]) -> List[Tu
     # Score each document
     candidate_scores = []
     for candidate in tqdm(candidates):
-        score = scorer._score_candidate(query, candidate[2])
+        score = scorer._score_candidate(query, candidate.chunk_content)
         candidate_scores.append((candidate, score))
    
     # Sort by score and return top_k
     candidate_scores.sort(key=lambda x: x[1], reverse=True)
-    return candidate_scores[:top_k] if top_k else candidate_scores
+    raw_reranked = candidate_scores[:top_k] if top_k else candidate_scores
+    # Convert to Pydantic
+    reranked_results: List[RerankedOutput] = [
+        RerankedOutput(
+            retriever_output=candidate,
+            rerank_score=rerank_score,
+        )
+        for candidate, rerank_score in raw_reranked
+    ]
+    return reranked_results

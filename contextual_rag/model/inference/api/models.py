@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, List, Literal, Tuple
 from pydantic import BaseModel, Field
-
+from contextual_rag.application.rag.rag_model import RerankedOutput
 # Request/Response models
 class Query(BaseModel):
     query: str
@@ -28,7 +28,7 @@ class AgenticResponse(BaseModel):
     phoenix_trace_id: Optional[str] = None
 
 class ChunksResponse(BaseModel):
-    retrieved_text: List[Tuple[Tuple[str, float, str, str], float]]
+    retrieved_text: List[RerankedOutput]
     response_time: float
     session_id: str
     query_id: str

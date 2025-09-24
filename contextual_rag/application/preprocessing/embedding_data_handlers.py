@@ -84,7 +84,7 @@ def create_documents_from_chunks(chunks: List[Chunk]):
     for i, chunk in enumerate(chunks):
         doc = Document(
             text=chunk.text,
-            metadata={"document_name":chunk.document_name, "chunk_id":chunk.chunk_id, "source":chunk.metadata["source"]}
+            metadata={"document_name":chunk.document_name, "chunk_id":chunk.chunk_id, "chunk_context":chunk.metadata["chunk_context"]}
         )
         documents.append(doc)
     

@@ -158,7 +158,7 @@ async def check_rag_pipeline_health() -> HealthStatus:
         result = await get_rag_answer(test_query)
         response_time = time.time() - start_time
         
-        if len(result[0]) > 0:
+        if len(result.answer) > 0:
             return HealthStatus(
                 service="rag_pipeline",
                 status="healthy",

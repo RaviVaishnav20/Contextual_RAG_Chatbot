@@ -40,7 +40,7 @@ database:
   database: "${DATABASE_NAME:-vector_db}"
   user: "${DATABASE_USER:-ravi}"
   password: "${DATABASE_PASSWORD:-password}"
-  table_name: "${DATABASE_TABLE_NAME:-test_dge_embed}" #test_v2
+  table_name: "${DATABASE_TABLE_NAME:-new_dge_embed}" #test_v2(limit doc), test_dge_embed(only context as chunk for all_doc), demo_dge_embed(chunk as text and context as metadata for all doc)
   hnsw_kwargs:
     hnsw_m: 16
     hnsw_ef_construction: 64
@@ -55,16 +55,16 @@ embedding:
 
 rag:
   retriver:
-    similarity_top_k: 10
+    similarity_top_k: 8
   reranker:
     primary_provider: "${RERANK_PRIMARY_PROVIDER:-ollama}"
-    primary_model_name: "${RERANK_PRIMARY_MODEL:-gemma3:1b}"
+    primary_model_name: "${RERANK_PRIMARY_MODEL:-llama3:8b}"
     fallback_provider: "${RERANK_FALLBACK_PROVIDER:-gemini}"
     fallback_model_name: "${RERANK_FALLBACK_MODEL:-gemini-2.5-flash}"
-    top_k: 10
+    top_k: 5
   rag_answer:
     primary_provider: "${RAG_PRIMARY_PROVIDER:-ollama}"
-    primary_model_name: "${RAG_PRIMARY_MODEL:-llama3:8b}"
+    primary_model_name: "${RAG_PRIMARY_MODEL:-qwen3:1.7b}"
     fallback_provider: "${RAG_FALLBACK_PROVIDER:-gemini}"
     fallback_model_name: "${RAG_FALLBACK_MODEL:-gemini-2.5-flash}"
     

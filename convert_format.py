@@ -6,8 +6,8 @@ def convert_format(input_file, output_file):
     with open(input_file, "r") as f:
         data = json.load(f)
 
-    converted = []
-    for item in tqdm(data):
+    converted = [] 
+    for idx, item in enumerate(tqdm(data)):
         # Get file name and replace extension with .md
         source_file = os.path.splitext(item["metadata"]["source"])[0] + ".md"
 
@@ -15,8 +15,9 @@ def convert_format(input_file, output_file):
         new_item = {
             "document_name": source_file,
             "chunk_id": f"chunk-{item['metadata']['chunk_id']}",
-            "text": item["metadata"]["contextual_chunk_content"],  # take contextual content
+            "text": item["chunk_content"],
             "metadata": {
+                "chunk_context": item["metadata"]["contextual_chunk_content"],
                 "source": "markdown"
             }
         }

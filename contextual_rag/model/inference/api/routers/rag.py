@@ -47,12 +47,12 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             # Handle evaluation
             evaluation_result = None
             if query.evaluate and os.getenv("OPENAI_API_KEY"):
-                contexts = response[1]
+                contexts = response.retrieved_contexts
                 
                 background_tasks.add_task(
                     run_ragas_evaluation, 
                     query.query, 
-                    response[0], 
+                    response.answer, 
                     contexts, 
                     query.reference_answer
                 )
@@ -63,9 +63,9 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
                 }
             
             return RAGResponse(
-                retrieved_text=response[1],
-                llm_response=response[0],
-                sources=response[2],
+                retrieved_text=response.retrieved_contexts,
+                llm_response=response.answer,
+                sources=response.sources,
                 response_time=response_time,
                 session_id=session_id,
                 query_id=query_id,
@@ -185,7 +185,7 @@ async def relevant_chunks_endpoint(query: Query):
             
             if query.evaluate:
                 span.set_attribute("response_time", response_time)
-                span.set_attribute("chunks_retrieved", len(response[1]))
+                span.set_attribute("chunks_retrieved", len(response))
             
             return ChunksResponse(
                 retrieved_text=response,

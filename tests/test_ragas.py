@@ -9,7 +9,7 @@ def load_questions(file_path: str):
     return data
 
 if __name__=="__main__":
-    file_path = settings.ragas_gt_dataset
+    file_path = settings.temp_ragas_gt_dataset #ragas_gt_dataset
     TEST_QUERIES = load_questions(file_path)
 
 

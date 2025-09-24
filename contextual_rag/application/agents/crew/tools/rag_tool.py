@@ -39,13 +39,13 @@ class RagTool(BaseTool):
            results = await get_rag_answer(query_string)
            response = f"""#Answer: 
            \n
-           {results[0]}
+           {results.answer}
            \n\n
            # Context: 
-           {'\n'.join(results[1])}
+           {'\n'.join(results.retrieved_contexts)}
             \n\n
             #Document Sources:
-            {','.join(results[2])}
+            {','.join(results.sources)}
            """
            return response  
         except Exception as e:
