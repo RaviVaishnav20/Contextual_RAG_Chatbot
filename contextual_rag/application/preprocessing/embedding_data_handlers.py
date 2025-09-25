@@ -57,9 +57,9 @@ def setup_pgvector_store():
     embed_dim = embed_config.get('dimension', 768)
 
     connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-    print("connection_string")
-    print(connection_string)
-    print(db_table_name)
+    # print("connection_string")
+    # print(connection_string)
+    # print(db_table_name)
     # connection_string = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
     # print(connection_string)
     url = make_url(connection_string)

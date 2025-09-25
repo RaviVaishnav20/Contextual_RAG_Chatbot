@@ -18,5 +18,5 @@ experiments/
 .env.docker
 .vscode
 .zen/
-data/
+data/artifacts
 resources/

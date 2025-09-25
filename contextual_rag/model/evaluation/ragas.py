@@ -19,6 +19,7 @@ from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import LLMContextRecall, Faithfulness, FactualCorrectness
 from contextual_rag.utils.save_data import save_ragas_response
 from dotenv import load_dotenv
+from tqdm import tqdm
 load_dotenv()
 class RagasEvaluator:
     """Simple RAGAS evaluation and tracing for your RAG system"""
@@ -45,6 +46,36 @@ class RagasEvaluator:
         context_precision.llm = self.llm
         context_recall.llm = self.llm
 
+   
+
+    async def prepare_evaluation_dataset_from_csv(self) -> EvaluationDataset:
+        """
+        Prepare dataset for RAGAS evaluation directly from CSV file
+        without running RAG.
+        """
+        print("📂 Preparing RAGAS evaluation dataset from CSV...")
+        
+        # Load CSV
+        df = pd.read_csv(settings.ragas_gt_dataset_with_response)
+        
+        dataset_list = []
+        for _, row in tqdm(df.iterrows(), total=len(df)):
+            question = row.get("input", "")
+            response = row.get("output", "")
+            retrieved_contexts = row.get("context", "")
+            ground_truth = row.get("ground_truth", "")
+
+            dataset_list.append(SingleTurnSample(
+                user_input = question,
+                retrieved_contexts = [retrieved_contexts] if pd.notna(retrieved_contexts) else [],
+                response = response,
+                reference = ground_truth if pd.notna(ground_truth) else ""
+            ))
+
+        evaluation_dataset = EvaluationDataset(dataset_list)
+        return evaluation_dataset
+
+
     async def prepare_evaluation_dataset_with_rag(self, test_queries: List[Dict[str, str]]) -> EvaluationDataset:
         """
         Prepare dataset for RAGAS evaluation
@@ -52,7 +83,7 @@ class RagasEvaluator:
         print("🔍 Preparing RAGAS evaluation dataset...")
         dataset_list = []
             
-        for i, query_data in enumerate(test_queries):
+        for i, query_data in enumerate(tqdm(test_queries)):
             question = query_data['question']
             ground_truth = query_data.get('ground_truth', '')         
            
@@ -108,6 +139,15 @@ class RagasEvaluator:
         
         # Prepare dataset
         dataset = await self.prepare_evaluation_dataset_with_rag(test_queries)
+
+    async def evaluate_batch_with_csv(self) -> str:
+        """
+        Run RAGAS evaluation on your RAG system
+        """
+        print("🚀 Starting RAGAS evaluation...")
+        
+        # Prepare dataset
+        dataset = await self.prepare_evaluation_dataset_from_csv()
         
         # # Define metrics to evaluate
         # metrics = [

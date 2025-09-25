@@ -1,0 +1,10 @@
+[
+    {
+    "question": "What are the sub-controls under T5.2.3 User Security Credentials Management?",
+    "ground_truth": "They include credential issuance, password complexity, periodic renewal, revocation, and monitoring of user access."
+  },
+  {
+    "question": "What is the definition of a Critical Entity in UAE IA Standards?",
+    "ground_truth": "A Critical Entity is an organization whose disruption would significantly impact national security, economy, or public safety."
+  }
+]

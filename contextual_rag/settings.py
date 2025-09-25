@@ -22,6 +22,7 @@ class Settings:
     ragas_evaluation_report = artifacts_dir / "ragas_evaluation_report.xlsx"
     ragas_metadata_file = artifacts_dir / "ragas_metadata_file.csv"
     ragas_gt_dataset = evaluation_dir/"ragas_gt_data.json"
+    ragas_gt_dataset_with_response = evaluation_dir/"ragas_gt_dataset_with_response.csv"
     temp_ragas_gt_dataset = evaluation_dir/"temp_ragas_gt_data.json"
 
     # Database configuration - uses new config system with fallback

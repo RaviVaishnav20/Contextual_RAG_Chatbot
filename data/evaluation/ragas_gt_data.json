@@ -1,0 +1,365 @@
+[
+    {
+      "question": "What is the definition of Procurement in Abu Dhabi Procurement Standards?",
+      "ground_truth": "Procurement is the support function that ensures identification, sourcing, and access to optimal goods, services, and projects required by government entities and End-users to fulfil their objectives."
+    },
+    {
+      "question": "What are the three main types of Procurement Standards?",
+      "ground_truth": "The Procurement Standards comprise Establishment Standards, Enablement Standards, and Execution Standards."
+    },
+    {
+      "question": "What are the ten core principles of Procurement?",
+      "ground_truth": "Ability, Accountability, Digital, Effectiveness, Excellence, Fairness, Integration, Integrity, Sustainability, and Transparency."
+    },
+    {
+      "question": "What is the purpose of the Code of Business Ethics?",
+      "ground_truth": "The Code of Business Ethics establishes principles and rules to regulate the work of Procurement Practitioners, ensuring ethical behaviour and accountability."
+    },
+    {
+      "question": "What are the eight principles of the Code of Business Ethics?",
+      "ground_truth": "Fiduciary Responsibility, Compliance with Applicable Legislations, Professional Integrity, Avoiding Conflicts of Interest, Protecting Confidential Information, Maintaining Fair Relationships, Environmental Responsibility, and Professionalism at Work."
+    },
+    {
+      "question": "What is Fiduciary Responsibility in procurement?",
+      "ground_truth": "Procurement Practitioners must act in the best interest of the government entity and ensure goods, services, and projects provide expected value."
+    },
+    {
+      "question": "What is the Procurement Delegation of Authority (PDoA)?",
+      "ground_truth": "The PDoA describes division of authority and powers in the government entity related to procurement operations, including all financial and non-financial authorisers."
+    },
+    {
+      "question": "What committee is established to manage procurement operations?",
+      "ground_truth": "A single Procurement Committee is established at each government entity to manage and supervise procurement operations."
+    },
+    {
+      "question": "What are Tendering Committees responsible for?",
+      "ground_truth": "Tendering Committees evaluate the results of tenders and encourage cross-functional collaboration, with separate committees for technical and commercial evaluations if required."
+    },
+    {
+      "question": "What is required for Continuing Professional Development?",
+      "ground_truth": "Procurement Practitioners must receive a minimum of 40 training hours per year to improve knowledge, skills, and competencies."
+    },
+    {
+      "question": "What must a Procurement Management Report include?",
+      "ground_truth": "It must include spend values, contracted prices, delivered savings, contracts, project status, supplier satisfaction, compliance, emergency purchases, and complaints."
+    },
+    {
+      "question": "What elements must the Procurement Strategy contain?",
+      "ground_truth": "Vision, mission, strategic objectives, procurement categories, demand management insights, supply options, risk assessments, rationalisation potential, strategic actions, and stakeholder relationships."
+    },
+    {
+      "question": "What is Category Management in procurement?",
+      "ground_truth": "Category management is a structured approach to develop strategies for specific categories of spend, aiming to reduce costs, drive innovation, and mitigate risks."
+    },
+    {
+      "question": "What is the purpose of Supplier Screening?",
+      "ground_truth": "Supplier screening identifies competent suppliers based on financial health, legal standing, technical capabilities, quality of goods/services, and historical performance."
+    },
+    {
+      "question": "What are the main solicitation channels?",
+      "ground_truth": "Request for Information (RFI), Request for Proposal (RFP), Request for Quotation (RFQ), and Reverse Auction."
+    },
+    {
+      "question": "What are the key principles for specification engineering?",
+      "ground_truth": "Specifications must reflect user needs, be functional and performance-based, encourage competition, and not favour any supplier."
+    },
+    {
+      "question": "What are the guidelines for negotiations?",
+      "ground_truth": "Negotiations must maintain confidentiality, uphold integrity, follow the Code of Business Ethics, and not alter award criteria."
+    },
+    {
+      "question": "What conditions allow suppliers to protest?",
+      "ground_truth": "Suppliers can protest in cases of violation of legislations, bid submission requirements, or the Code of Business Ethics."
+    },
+    {
+      "question": "What is the purpose of Supplier Performance Evaluation?",
+      "ground_truth": "It assesses supplier performance based on operational delivery, compliance with HSE standards, responsiveness, participation, contract withdrawals, and claims."
+    },
+    {
+      "question": "What is the objective of the Requisition to Pay cycle?",
+      "ground_truth": "Its objective is to provide an efficient and cost-effective method for purchasing goods, services, and projects while ensuring proper control."
+    },
+    {
+      "question": "What are the procurement standards?",
+      "ground_truth": "Procurement Standards are an integrated set of principles that harmonize the way of working, establish a unified operating model, and define the performance of Procurement." 
+    },
+    {
+      "question": "What is the purpose of the Procurement Strategy?",
+      "ground_truth": "The Procurement Strategy states an Entity’s approach to achieving procurement objectives, executing activities and initiatives, and aligning with Abu Dhabi Governmental initiatives." 
+    },
+    {
+      "question": "Who is responsible for creating the Procurement Strategy?",
+      "ground_truth": "The Head of Procurement is responsible for the creation of the Procurement Strategy, assigning key members to develop and monitor execution." 
+    },
+    {
+      "question": "What are the four procurement capability types?",
+      "ground_truth": "The Procurement Capability Model includes Strategic, Tactical, Operational, and Support capabilities." 
+    },
+    {
+      "question": "What does Strategic Procurement Capability include?",
+      "ground_truth": "Strategic Procurement Capability includes Procurement Strategy and Demand and Category Management processes." 
+    },
+    {
+      "question": "What are procurement benefits?",
+      "ground_truth": "Procurement Benefits are classified into Cost Reduction, Cost Avoidance, and Cash Impact, measured against Baseline Spend." 
+    },
+    {
+      "question": "What is Baseline Spend?",
+      "ground_truth": "Baseline Spend is the value of addressable spend against which any procurement benefit is measured." 
+    },
+    {
+      "question": "What is the Abu Dhabi Local Content Program (ADLC)?",
+      "ground_truth": "The ADLC directs government spending towards Abu Dhabi’s local economy, requiring ICV certificates and giving local content a 40% weight in financial/commercial evaluation." 
+    },
+    {
+      "question": "What are the MSME classifications in Abu Dhabi?",
+      "ground_truth": "MSMEs are classified by sector into Micro, Small, and Medium based on employee count and annual revenue." 
+    },
+    {
+      "question": "What economic incentives are given to MSMEs?",
+      "ground_truth": "MSMEs receive 15% allocation of annual contracts, exemptions from bid/performance bonds, faster 15-day payments, and reporting support from Entities." 
+    },
+    {
+      "question": "What incentives are given to Emirati Entrepreneurs?",
+      "ground_truth": "Emirati Entrepreneurs are exempted from bid and performance bonds, paid within 15 days, and Entities must report quarterly on compliance." 
+    },
+    {
+      "question": "What is a Purchase Requisition?",
+      "ground_truth": "A Purchase Requisition is a request generated by an End-User for securing goods, services, or projects." 
+    },
+    {
+      "question": "What is a Purchase Order?",
+      "ground_truth": "A Purchase Order is a legally binding document issued by a government entity to Suppliers, committing both parties to quantities, prices, delivery, and payment terms." 
+    },
+    {
+      "question": "What is the role of the Government Procurement Office (GPO)?",
+      "ground_truth": "The GPO consolidates demand, manages sourcing for common categories, provides shared services, maintains the procurement framework, and develops the eGate system." 
+    },
+    {
+      "question": "What is the role of Entity Procurement?",
+      "ground_truth": "Entity Procurement handles entity-specific categories, including sourcing, contracting, ordering, and supplier performance, while using GPO shared services." 
+    },
+    {
+      "question": "What are the procurement calculation principles?",
+      "ground_truth": "Procurement benefits are calculated after acceptance of binding offers, excluding one-time implementation costs, and based on agreed baselines supported by AP, PO, or contract data." 
+    },
+    {
+      "question": "What is Cost Reduction in procurement benefits?",
+      "ground_truth": "Cost Reduction is achieving 'same for less' where direct costs are reduced compared to baseline spend." 
+    },
+    {
+      "question": "What is Cost Avoidance in procurement?",
+      "ground_truth": "Cost Avoidance is taking actions to prevent future incremental costs, such as demand optimization or offsetting external price increases." 
+    },
+    {
+      "question": "What is Cash Impact in procurement?",
+      "ground_truth": "Cash Impact refers to one-time financial effects like inventory reduction or payment term extension that improve working capital." 
+    },
+    {
+      "question": "What is the role of Supplier Performance and Relationship Management?",
+      "ground_truth": "It involves segmenting suppliers, managing relationships with selected suppliers, and evaluating and improving their performance." 
+    },
+    { "question": "What is the purpose of the Procurement Manual?", "ground_truth": "The Procurement Manual provides operational procedures, reinforcing Procurement Standards, the Procurement Charter, and the Procurement Delegation of Authority (PDoA), giving detailed explanation of their application." },
+    { "question": "What is the scope of the Procurement Manual?", "ground_truth": "The Procurement Manual applies to all procurement activities conducted by government Entities and the Government Procurement Office (GPO), except for specified exemptions approved by the Executive Council." },
+    { "question": "What are the procurement standards?", "ground_truth": "Procurement Standards include principles of transparency, competitiveness, value for money, fairness, and alignment with Abu Dhabi’s governance framework." },
+    { "question": "What is the Procurement Operating Model?", "ground_truth": "The Procurement Operating Model defines the roles of the Government Procurement Office (GPO) and Entity Procurement, covering mandate, empowerment, responsibilities, shared services, IT platforms, and category ownership." },
+    { "question": "What is the role of the Government Procurement Office (GPO)?", "ground_truth": "The GPO consolidates demand, manages common categories, provides shared services, maintains the Procurement Framework, develops IT platforms, and coordinates market development initiatives." },
+    { "question": "What are Entity-specific categories?", "ground_truth": "Entity-specific categories are goods or services procured only by one or few entities, managed directly by the Entity Procurement teams while utilizing GPO’s shared services." },
+    { "question": "What is the Procurement Capability Model?", "ground_truth": "The Procurement Capability Model has four types: Strategic (Procurement Strategy, Demand & Category Management), Tactical (Source to Contract, Contract Lifecycle Management, Supplier Relationship Management), Operational (Requisition to Pay), and Support (Risk & Regulation, Supplier/Item/User Master Data Management)." },
+    { "question": "What are Strategic Procurement Capabilities?", "ground_truth": "Strategic capabilities include Procurement Strategy and Demand & Category Management to align with overall strategy, deliver value, and manage demand-supply gaps." },
+    { "question": "What are Tactical Procurement Capabilities?", "ground_truth": "Tactical capabilities include Source to Contract, Contract Lifecycle Management, and Supplier Performance and Relationship Management." },
+    { "question": "What are Operational Procurement Capabilities?", "ground_truth": "Operational capability is Requisition to Pay, covering PR, PO, goods/services receipt, and invoice reconciliation." },
+    { "question": "What are Supporting Procurement Capabilities?", "ground_truth": "Supporting capabilities include Risk & Regulation, Supplier Master Data Management, Item Master Data Management, and User Master Data Management." },
+    { "question": "What are the procurement benefits?", "ground_truth": "Procurement benefits are classified into cost reduction, cost avoidance, and cash impact, measured through savings and value improvements using defined methodologies." },
+    { "question": "What is the Abu Dhabi Local Content (ADLC) Program?", "ground_truth": "The ADLC Program directs government spending to develop Abu Dhabi’s economy, requiring ICV certificates in tenders, with 40% weight in financial evaluation, encouraging Emiratization, local investment, and procurement." },
+    { "question": "What incentives exist for MSMEs in procurement?", "ground_truth": "The Department of Government Support mandates 15% of government annual purchases and contracts to be allocated to MSMEs." },
+    { "question": "How are MSMEs classified in Abu Dhabi?", "ground_truth": "MSMEs are classified by sector, number of employees, and revenue: e.g., Trade Sector: Micro ≤5 employees & <3m AED, Small 6-50 & 3–50m AED, Medium 51-100 & 50–250m AED." },
+    { "question": "What is the Supplier Master Data Management (MDM) process?", "ground_truth": "Supplier MDM manages supplier registration, qualification, disqualification, deactivation, and reactivation, maintaining a unique record for each supplier in the database." },
+    { "question": "What is required for Supplier Registration?", "ground_truth": "Abu Dhabi DED suppliers submit self-registration requests via SAP Ariba, while Non-ADDED suppliers require entity-raised requests; registration ensures eligibility for tenders." },
+    { "question": "What are Common Categories?", "ground_truth": "Common Categories are those procured by five or more entities, managed centrally by the GPO to achieve economies of scale." },
+    { "question": "What system is used for procurement processes?", "ground_truth": "SAP Ariba modules enable procurement processes such as sourcing, contracting, supplier management, and requisition to pay." },
+    { "question": "What does the term In-Country Value (ICV) mean?", "ground_truth": "In-Country Value (ICV) measures a supplier’s economic contribution in Abu Dhabi, including Emiratization, investments, and use of locally procured goods and services." },
+    
+    {
+      "question": "What is the purpose of the UAE IA Standards?",
+      "ground_truth": "The purpose of the UAE IA Standards is to raise the minimum level of protection of information assets and supporting systems across all implementing entities in the UAE."
+    },
+    {
+      "question": "What does the scope of the UAE IA Standards include?",
+      "ground_truth": "The scope includes the use, processing, storage, and transmission of information or data, and the systems and processes used for those purposes, whether in physical or electronic form."
+    },
+    {
+      "question": "What are the key principles guiding the development of UAE IA Standards?",
+      "ground_truth": "The development was guided by applicability across industries, support for national, sector, and entity-level cybersecurity views, and performance management through measurable indicators."
+    },
+    {
+      "question": "What lifecycle approach does the UAE IA Standards promote?",
+      "ground_truth": "It promotes a lifecycle approach for establishing, implementing, maintaining, and continuously improving information assurance through understanding, risk assessment, implementing controls, monitoring, and continual improvement."
+    },
+    {
+      "question": "What is a risk-based approach in UAE IA Standards?",
+      "ground_truth": "A risk-based approach is a systematic methodology for identifying, evaluating, and treating entity-level risks to ensure controls are proportionate to the impact of threats."
+    },
+    {
+      "question": "What are the key activities in the risk-based approach?",
+      "ground_truth": "The activities include context establishment, risk identification, risk estimation, risk evaluation, risk treatment, risk acceptance, risk monitoring, and risk communication."
+    },
+    {
+      "question": "What are 'Always Applicable' controls?",
+      "ground_truth": "'Always Applicable' controls are foundational security requirements that every entity must implement regardless of its risk assessment outcomes."
+    },
+    {
+      "question": "How are security controls prioritized?",
+      "ground_truth": "Security controls are prioritized into four levels (P1 to P4) based on their importance in mitigating threats and building foundational IA capabilities, with P1 controls being mandatory and not reducible."
+    },
+    {
+      "question": "What is the role of NESA in UAE IA Standards?",
+      "ground_truth": "NESA provides strategic leadership, approves and issues the standards, coordinates stakeholder involvement, and oversees compliance monitoring and reporting."
+    },
+    {
+      "question": "What are the responsibilities of sector regulators?",
+      "ground_truth": "Sector regulators contribute to developing sector-specific requirements, facilitate implementation, consolidate compliance reports from entities, and report to NESA."
+    },
+    {
+      "question": "What are the responsibilities of implementing entities?",
+      "ground_truth": "Implementing entities conduct risk assessments, implement applicable controls, report compliance to regulators, and contribute to the development of requirements."
+    },
+    {
+      "question": "What are key success factors for UAE IA Standards implementation?",
+      "ground_truth": "Key factors include awareness and training, understanding risk-based controls, adopting tailored approaches, implementing compliance measurement systems, management support, funding, and information sharing."
+    },
+    {
+      "question": "How is compliance with UAE IA Standards defined?",
+      "ground_truth": "Compliance refers to comparing the requirements of the standards with the actual state of implementation within an entity, measured by individual control and overall entity compliance."
+    },
+    {
+      "question": "What is the role of procurement in supply chain protection?",
+      "ground_truth": "Procurement processes help protect the supply chain by requiring suppliers to implement security controls, promote transparency, vet subordinate suppliers, restrict risky sources, and prevent counterfeit components."
+    },
+    {
+      "question": "What is the control requirement for supplier reviews?",
+      "ground_truth": "Entities must conduct supplier reviews before contractual agreements, define evaluation processes, periodically review suppliers, and ensure alignment with sector and national requirements."
+    },
+    {
+      "question": "What does the 'Limitation of Harm' control require?",
+      "ground_truth": "Entities must limit information shared with suppliers and use a diverse set of suppliers for critical systems to reduce supply chain risks."
+    },
+    {
+      "question": "What does 'Supply Chain Operations Security' require?",
+      "ground_truth": "Entities must evaluate supplier-related risks, align controls with suppliers in contracts, and monitor how suppliers implement security measures."
+    },
+    {
+      "question": "What is the role of compliance monitoring?",
+      "ground_truth": "Compliance monitoring provides NESA visibility of the current compliance status and helps improve the overall cybersecurity posture of UAE cyberspace."
+    },
+    {
+      "question": "What is the significance of sector and national level controls?",
+      "ground_truth": "They overcome silos of single-entity approaches, create integrated national assurance, and enable analysis of threats, risks, and incidents at broader levels."
+    },
+    {
+      "question": "Which international standards influenced the UAE IA Standards?",
+      "ground_truth": "The standards were influenced by ISO/IEC 27001, 27002, 27005, 27010, 27032, NIST 800-53, Abu Dhabi Information Security Standards, and SANS 20 Critical Security Controls."
+    },
+  { "question": "Who does the HR regulation apply to?", "ground_truth": "The provisions apply to all civilian personnel below the executive management working in government authorities in the Emirate." },
+    { "question": "What is the scope of delegation of powers?", "ground_truth": "The head of the government authority may delegate powers by administrative decision, but delegation does not exempt them from responsibility." },
+    { "question": "When does delegation cease?", "ground_truth": "Delegation ceases at the end of service, expiry of authorization, end of purpose, revocation, vacancy, or after three months from the appointment of a new chairman." },
+    { "question": "What is the general policy for regulating public jobs?", "ground_truth": "The Executive Council issues decisions regulating public functions, including mechanisms for analysis, evaluation, classification, and grades." },
+    { "question": "What are the conditions for general appointment?", "ground_truth": "Candidates must be citizens, of good conduct, at least 18 years old, physically fit, qualified, and free from disqualifying convictions or dismissals." },
+    { "question": "Can non-nationals be appointed?", "ground_truth": "Yes, only if no national candidate is available, subject to approval, and with conditions including performance and prior service history." },
+    { "question": "What is the priority order for vacant positions?", "ground_truth": "Priority is given to citizens within the authority, then citizens outside who completed national service, followed by other citizens." },
+    { "question": "What is the policy on graduate trainees?", "ground_truth": "Graduate trainees receive stipends, must pass training before appointment, and may be directly appointed after program completion." },
+    { "question": "What provisions exist for persons with disabilities?", "ground_truth": "Citizens with disabilities have equal rights, must be provided suitable jobs, environments, and training opportunities." },
+    { "question": "What is the probationary period policy?", "ground_truth": "The probationary period is part of continuous service and may be interrupted by national service." },
+    { "question": "What is the part-time appointment policy?", "ground_truth": "Part-time appointments support Emirati employees, limited to jobs below supervisory level, with hours at half the full-time schedule." },
+    { "question": "What is the policy on salaries and allowances?", "ground_truth": "Salaries and allowances are determined by schedules issued by the Executive Council, and employees are entitled from their start date." },
+    { "question": "How are deductions from salaries regulated?", "ground_truth": "Deductions are allowed only for alimony, court debts, or debts to the government, and may not exceed 25% of total salary without consent." },
+    { "question": "Who covers recruitment expenses for non-nationals?", "ground_truth": "The government authority covers tickets, residence expenses for up to one month, permits, and medical examinations." },
+    { "question": "What is the performance management system?", "ground_truth": "The system measures employee performance against strategic objectives, teamwork, and serves as a basis for rewards." },
+    { "question": "How is training and job development ensured?", "ground_truth": "Government authorities must provide training to citizens to replace non-citizen employees and coordinate with the Authority." },
+    { "question": "What is the promotions policy?", "ground_truth": "Promotions are based on performance evaluations, available positions, and conditions specified in the regulation." },
+    { "question": "What medical insurance is provided?", "ground_truth": "Medical care is provided to non-citizen employees under the health insurance law of the Emirate." },
+    { "question": "What is the national service policy?", "ground_truth": "Employees joining national, reserve, or alternative service retain their job and are reinstated after completion." },
+    { "question": "What are the termination of service rules?", "ground_truth": "Termination occurs upon resignation, dismissal, retirement, disability, death, or as otherwise provided by law." },
+  
+    {
+      "question": "What are the procurement standards?",
+      "ground_truth": "Abu Dhabi procurement standards include transparency, competitiveness, and value for money."
+    },
+    {
+      "question": "How do the Delivery Terms and Payment Terms relate to a Purchase Order within the procurement process?",
+      "ground_truth": "Delivery Terms and Payment Terms define the obligations for goods/services receipt and payment schedules, forming essential conditions within a Purchase Order."
+    },
+    {
+      "question": "What is the relationship between Foreground Intellectual Property and Background Intellectual Property?",
+      "ground_truth": "Foreground Intellectual Property is created during the contract tenure, while Background Intellectual Property refers to the IP supplied by contracting parties at the start of engagement."
+    },
+    {
+      "question": "What is the primary purpose of the Abu Dhabi Procurement Standards?",
+      "ground_truth": "The standards aim to ensure fairness, transparency, and efficiency in procurement by outlining processes and compliance requirements."
+    },
+    {
+      "question": "What is the significance of a Valid Exception Code in post factum Purchase Orders?",
+      "ground_truth": "A Valid Exception Code authorizes and justifies the issuance of post factum Purchase Orders, ensuring compliance with procurement standards."
+    },
+    {
+      "question": "What disciplinary actions are outlined for financial rule violations in the HR Bylaws?",
+      "ground_truth": "Disciplinary actions include warnings, fines, suspension, and termination, depending on the severity of the financial rules violation."
+    },
+    {
+      "question": "How do disciplinary actions relate to pension or bonus rights?",
+      "ground_truth": "Penalties are designed to discipline employees without automatically forfeiting their pension or bonus rights unless explicitly stated."
+    },
+    {
+      "question": "What is the objective of Decision No. (10) of 2020?",
+      "ground_truth": "Decision No. (10) of 2020 aims to regulate and unify HR management across Abu Dhabi entities, ensuring fairness and consistency."
+    },
+    {
+      "question": "What is the relationship between Law No. (6) of 2016 and Decision No. (10) of 2020?",
+      "ground_truth": "Law No. (6) of 2016 provides the overarching legal framework, while Decision No. (10) of 2020 operationalizes its HR provisions."
+    },
+    {
+      "question": "What are the roles of the Team Grader and User Enablement Team in SAP Ariba?",
+      "ground_truth": "The Team Grader evaluates supplier submissions, while the User Enablement Team supports users in navigating and utilizing SAP Ariba."
+    },
+    {
+      "question": "How do Supplier Manager System Groups relate to Supplier registration in SAP Ariba?",
+      "ground_truth": "Supplier Manager System Groups manage supplier categorization, qualification, and approval within SAP Ariba’s registration framework."
+    },
+    {
+      "question": "What is the main objective of aligning the Procurement Manual with SAP Ariba?",
+      "ground_truth": "The objective is to standardize procurement processes, improve efficiency, and enable digital alignment with SAP Ariba’s platform."
+    },
+    {
+      "question": "How do Technical Envelope and Technical and Commercial Envelope facilitate sourcing events?",
+      "ground_truth": "Technical Envelope focuses on technical evaluation, while Technical and Commercial Envelope allows both technical and financial assessment."
+    },
+    {
+      "question": "What is the difference between a Request for Proposal (RFP) and a Request for Quotation (RFQ)?",
+      "ground_truth": "An RFP seeks detailed solutions and methodologies from suppliers, while an RFQ focuses on pricing and basic terms for specific goods or services."
+    },
+    {
+      "question": "How does a Sole/Single Source tendering method relate to Supplier qualification?",
+      "ground_truth": "A Sole/Single Source tender limits competition to one supplier, requiring rigorous qualification to justify supplier selection."
+    },
+    {
+      "question": "What is the purpose of the Procurement Manual (Business Process)?",
+      "ground_truth": "Its purpose is to provide structured guidelines for procurement activities, ensuring consistency and compliance across business processes."
+    },
+    {
+      "question": "What is a Reverse Auction (eAuction) and its role in procurement?",
+      "ground_truth": "A Reverse Auction enables suppliers to bid competitively in real time, lowering prices for goods, services, or projects."
+    },
+    {
+      "question": "How does the risk-based approach relate to Always Applicable controls in UAE IA Standards?",
+      "ground_truth": "Entities must apply Always Applicable controls universally while tailoring additional measures through a risk-based approach."
+    },
+    {
+      "question": "What are the sub-controls under T5.2.3 User Security Credentials Management?",
+      "ground_truth": "They include credential issuance, password complexity, periodic renewal, revocation, and monitoring of user access."
+    },
+    {
+      "question": "What is the definition of a Critical Entity in UAE IA Standards?",
+      "ground_truth": "A Critical Entity is an organization whose disruption would significantly impact national security, economy, or public safety."
+    }
+  ]
+  

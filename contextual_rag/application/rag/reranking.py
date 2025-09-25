@@ -71,32 +71,56 @@ Score:"""
             except:
                 return 0.5
 
-        
+## uncomment this and comment below rerank function to enable reranking   
+# def rerank(query: str, candidates: RetrieverOutput) -> List[RerankedOutput]:
+#     """Re-rank documents by relevance"""
+#     if not candidates:
+#         return []
+#     cm = ConfigManager()
+#     rag_cfg = cm.get_rag_config() or {}
+#     top_k = rag_cfg.get('reranker', {}).get('top_k','')
+#     scorer = CandidateScorer()
+#     # print(f"Re-ranking {len(candidates)} candidates...")
+    
+#     # Score each document
+#     candidate_scores = []
+#     for candidate in candidates:
+#         score = scorer._score_candidate(query, candidate.chunk_content)
+#         candidate_scores.append((candidate, score))
+   
+#     # Sort by score and return top_k
+#     candidate_scores.sort(key=lambda x: x[1], reverse=True)
+#     raw_reranked = candidate_scores[:top_k] if top_k else candidate_scores
+#     # Convert to Pydantic
+#     reranked_results: List[RerankedOutput] = [
+#         RerankedOutput(
+#             retriever_output=candidate,
+#             rerank_score=rerank_score,
+#         )
+#         for candidate, rerank_score in raw_reranked
+#     ]
+#     return reranked_results
+
+
 def rerank(query: str, candidates: RetrieverOutput) -> List[RerankedOutput]:
     """Re-rank documents by relevance"""
-    if not candidates:
-        return []
-    cm = ConfigManager()
-    rag_cfg = cm.get_rag_config() or {}
-    top_k = rag_cfg.get('reranker', {}).get('top_k','')
-    scorer = CandidateScorer()
-    print(f"Re-ranking {len(candidates)} candidates...")
+    
+    # print(f"Re-ranking {len(candidates)} candidates...")
     
     # Score each document
     candidate_scores = []
-    for candidate in tqdm(candidates):
-        score = scorer._score_candidate(query, candidate.chunk_content)
-        candidate_scores.append((candidate, score))
+    for candidate in candidates:
+        candidate_scores.append((candidate, 0.5))
    
     # Sort by score and return top_k
     candidate_scores.sort(key=lambda x: x[1], reverse=True)
-    raw_reranked = candidate_scores[:top_k] if top_k else candidate_scores
+    
     # Convert to Pydantic
     reranked_results: List[RerankedOutput] = [
         RerankedOutput(
             retriever_output=candidate,
             rerank_score=rerank_score,
         )
-        for candidate, rerank_score in raw_reranked
+        for candidate, rerank_score in candidate_scores
     ]
     return reranked_results
