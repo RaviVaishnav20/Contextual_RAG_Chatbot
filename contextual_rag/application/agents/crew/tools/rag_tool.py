@@ -37,16 +37,16 @@ class RagTool(BaseTool):
              
         try:
            results = await get_rag_answer(query_string)
-           response = f"""#Answer: 
-           \n
-           {results.answer}
-           \n\n
-           # Context: 
-           {'\n'.join(results.retrieved_contexts)}
-            \n\n
-            #Document Sources:
-            {','.join(results.sources)}
-           """
-           return response  
+        #    response = f"""#Answer: 
+        #    \n
+        #    {results.answer}
+        #    \n\n
+        #    # Context: 
+        #    {'\n'.join(results.retrieved_contexts)}
+        #     \n\n
+        #     #Document Sources:
+        #     {','.join(results.sources)}
+        #    """
+           return results.answer  
         except Exception as e:
             return f"Error in enhanced search: {str(e)}"

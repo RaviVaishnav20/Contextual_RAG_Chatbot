@@ -9,13 +9,15 @@ def load_questions(file_path: str):
     return data
 
 if __name__=="__main__":
-    # file_path = settings.ragas_gt_dataset #temp_ragas_gt_dataset #ragas_gt_dataset
-    # TEST_QUERIES = load_questions(file_path)
+    file_path = settings.ragas_gt_dataset #temp_ragas_gt_dataset #ragas_gt_dataset
+    TEST_QUERIES = load_questions(file_path)
 
 
     evaluator = RagasEvaluator()
   
     # Run evaluation
-    response = asyncio.run(evaluator.evaluate_batch_with_csv())
+    # response = asyncio.run(evaluator.evaluate_batch_with_csv())
+    response = asyncio.run(evaluator.evaluate_rag_batch(TEST_QUERIES))
     print("\n🎉 RAGAS evaluation complete!")
     print(f"Check {response} for detailed results")
+ 

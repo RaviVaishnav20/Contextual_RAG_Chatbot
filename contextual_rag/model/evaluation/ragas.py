@@ -140,6 +140,15 @@ class RagasEvaluator:
         # Prepare dataset
         dataset = await self.prepare_evaluation_dataset_with_rag(test_queries)
 
+        result = evaluate(dataset=dataset,metrics=[LLMContextRecall(), Faithfulness(), FactualCorrectness()],llm=self.evaluator_llm)
+        # result = evaluate(dataset=dataset,metrics=[Faithfulness(), FactualCorrectness()],llm=self.evaluator_llm)
+        
+        result_df = result.to_pandas()
+        ragas_evaluation_report = settings.ragas_evaluation_report
+        # result_df.to_csv(ragas_evaluation_report, index=False)
+        result_df.to_excel(ragas_evaluation_report, sheet_name="Sheet1")
+        return f"\n💾 Results saved to: {ragas_evaluation_report}"
+
     async def evaluate_batch_with_csv(self) -> str:
         """
         Run RAGAS evaluation on your RAG system

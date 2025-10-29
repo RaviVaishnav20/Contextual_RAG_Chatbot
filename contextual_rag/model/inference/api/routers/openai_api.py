@@ -13,12 +13,39 @@ async def list_models():
 @router.post("/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
     try:
-        all_u_msg = (m for m in reversed(request.messages) if m.role == "user")
-        user_msg = next(all_u_msg, None)
-        if not user_msg:
-            raise HTTPException(status_code=400, detail="No user message found")
         
-        query = Query(query=user_msg.content, evaluate=False)
+
+        all_u_msg = [m for m in reversed(request.messages) if m.role == "user"]
+        if len(all_u_msg) == 0:
+            raise HTTPException(status_code=400, detail="No user message found")
+
+        if len(all_u_msg) == 1:
+            user_msg = all_u_msg[0]
+            query = f"Query: {user_msg.content}"
+
+        elif len(all_u_msg) > 3:
+            # take the last 3 messages
+            recent_msgs = all_u_msg[:3]
+            user_msg = recent_msgs[0]
+            conversation_text = "\n".join(m.content for m in recent_msgs[1:])
+            query = f"""
+            Query: {user_msg.content}
+
+            Previous Conversation:
+            {conversation_text}
+            """
+        else:
+            user_msg = all_u_msg[0]
+            conversation_text = "\n".join(m.content for m in all_u_msg[1:])
+            query = f"""
+            Query: {user_msg.content}
+
+            Previous Conversation:
+            {conversation_text}
+            """
+
+
+        query = Query(query=query, evaluate=True)
         response = await agentic_rag_endpoint(query, BackgroundTasks())
 
         return {

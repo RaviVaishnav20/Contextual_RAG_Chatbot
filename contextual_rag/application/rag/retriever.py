@@ -19,7 +19,7 @@ def retrieve_with_llama_index(query_text: str) -> List[RetrieverOutput]:
     # 1️⃣ Setup PGVectorStore
     vector_store = setup_pgvector_store()
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
+ 
     # 2️⃣ Create an index (no need to rebuild)
     custom_embed = CustomEmbedding()
     index = VectorStoreIndex.from_vector_store(

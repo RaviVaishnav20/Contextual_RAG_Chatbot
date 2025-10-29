@@ -1,4 +1,4 @@
-from contextual_rag.infrastructure.llm import generate_content
+from contextual_rag.application.networks.llm import generate_content
 from typing import List, Tuple
 from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.utils.misc import remove_think_portion
@@ -78,8 +78,10 @@ def generate_answer(contexts: List[RerankedOutput], question: str) -> RagAnswer:
             provider=primary_provider,
             model_name=primary_model,
             prompt=prompt
-        ).strip()
-        answer = remove_think_portion(answer)
+        )
+        print(type(answer))
+        print(answer)
+        # answer = remove_think_portion(answer)
 
         return RagAnswer(
             answer=answer,
@@ -87,8 +89,9 @@ def generate_answer(contexts: List[RerankedOutput], question: str) -> RagAnswer:
             sources=sources
         )
 
-    except Exception:
+    except Exception as e :
         try:
+            print(e)
             answer = generate_content(
                 provider=fallback_provider,
                 model_name=fallback_model,

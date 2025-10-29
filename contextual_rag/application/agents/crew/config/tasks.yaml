@@ -1,20 +1,32 @@
-# routing_task:
+# Task 1 (General conversation path)
+# general_task:
 #   description: >
-#     Understand the user query: {query}, and route it to the most appropriate knowledge base
+#     Handle general conversation queries such as greetings ("hi"), 
+#     follow-ups ("what did I just ask"), or casual small talk. 
+#     Use the GeneralConversationTool to provide a friendly and direct response.
 #   expected_output: >
-#     The most appropriate knowledge base to route the user query to, the answer should be either 'pdf_search' or 'pdf_search'
-#   agent: routing_agent
+#     - A natural, friendly, and helpful response to the user query 
+#       without requiring document retrieval.
+#   agent: general_agent
 
+# Task 2 (Information retrieval path)
 retrieval_task:
   description: >
-    Retrieve the most relevant information from the available sources for the user query: {query}
+    Either use general conversation queries such as greetings ("hi"), using GeneralConversationTool to provide a friendly and direct response.
+    or Use RagTool to Retrieve queries the most relevant information from the available sources to answer the user query: {query}.
   expected_output: >
-    The most relevant information in form of text as retrieved from the sources.
+    - If GeneralConversationTool then A natural, friendly, and helpful response to the user query 
+    - If RagTool then A ranked set of retrieved passages or text snippets directly related to the user query.
   agent: retriever_agent
 
+# Task 3 (Final synthesis, always used last)
 response_task:
   description: >
-    Synthesize the final response for the user query: {query}
+    Generate the final response for the user query: {query} 
+    using either general conversation output or retrieved information.  
+    If no relevant information is found, provide a graceful fallback.
   expected_output: >
-    A concise and coherent response based on the retrieved infromation from the right source for the user query: {query}. If you are not ble to retrieve the information then respond with "I'm sorry, I couldn't find the information you're looking for."
+    - A concise, well-structured answer that integrates either 
+      the general conversation or the retrieved knowledge.  
+    - If no information is found: "I'm sorry, I couldn't find the information you're looking for."
   agent: response_synthesizer_agent

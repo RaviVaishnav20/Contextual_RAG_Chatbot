@@ -7,7 +7,7 @@ from contextual_rag.application.agents.crew.crew import AgenticRag
 import asyncio, time, traceback
 from openinference.semconv.trace import SpanAttributes
 import os
- 
+from contextual_rag.settings import settings
 router = APIRouter()
 
 @router.post("/rag", response_model=RAGResponse)
@@ -15,7 +15,7 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
     """Enhanced RAG endpoint with conditional tracing and evaluation"""
     session_id, query_id = generate_ids()
     start_time = time.time()
-    
+    rag_timeout = settings.RAG_TIMEOUT
     # Use conditional tracing based on evaluate flag
     with conditional_span(
         "rag_query", 
@@ -32,13 +32,13 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             # Get RAG response with timeout
             response = await asyncio.wait_for(
                 get_rag_answer(query.query),
-                timeout=180  # 2 minute timeout
+                timeout=rag_timeout  # 2 minute timeout
             )
             response_time = time.time() - start_time
             
             # Set output attributes if tracing
             if query.evaluate:
-                span.set_attribute(SpanAttributes.OUTPUT_VALUE, response[0])
+                span.set_attribute(SpanAttributes.OUTPUT_VALUE, response.answer)
                 span.set_attribute("response_time", response_time)
             
             # Get trace ID
@@ -46,21 +46,21 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             
             # Handle evaluation
             evaluation_result = None
-            if query.evaluate and os.getenv("OPENAI_API_KEY"):
-                contexts = response.retrieved_contexts
+            # if query.evaluate and os.getenv("OPENAI_API_KEY"):
+            #     contexts = response.retrieved_contexts
                 
-                background_tasks.add_task(
-                    run_ragas_evaluation, 
-                    query.query, 
-                    response.answer, 
-                    contexts, 
-                    query.reference_answer
-                )
+            #     background_tasks.add_task(
+            #         run_ragas_evaluation, 
+            #         query.query, 
+            #         response.answer, 
+            #         contexts, 
+            #         query.reference_answer
+            #     )
                 
-                evaluation_result = {
-                    "status": "evaluating", 
-                    "message": "RAGAS evaluation running in background"
-                }
+            #     evaluation_result = {
+            #         "status": "evaluating", 
+            #         "message": "RAGAS evaluation running in background"
+            #     }
             
             return RAGResponse(
                 retrieved_text=response.retrieved_contexts,
@@ -74,7 +74,7 @@ async def rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             )
             
         except asyncio.TimeoutError:
-            raise HTTPException(status_code=504, detail="RAG request timed out after 120 seconds")
+            raise HTTPException(status_code=504, detail=f"RAG request timed out after {rag_timeout} seconds")
         except Exception as e:
             error_details = f"RAG processing failed: {str(e)}"
             print(f"RAG Error: {error_details}")
@@ -86,7 +86,7 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
     """Enhanced Agentic RAG endpoint with conditional tracing and evaluation"""
     session_id, query_id = generate_ids()
     start_time = time.time()
-    
+    agentic_ai_timeout = settings.AGENTIC_RAG_TIMEOUT
     with conditional_span(
         "agentic_rag_query",
         enable_tracing=query.evaluate,
@@ -107,12 +107,12 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
                 with conditional_span("crew_kickoff", True, query=query.query):
                     response = await asyncio.wait_for(
                         asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
-                        timeout=300  # 3 minute timeout for agentic RAG
+                        timeout=agentic_ai_timeout  # 3 minute timeout for agentic RAG
                     )
             else:
                 response = await asyncio.wait_for(
                     asyncio.create_task(asyncio.to_thread(agentic_rag.run_crew, query.query)),
-                    timeout=300
+                    timeout=agentic_ai_timeout
                 )
                 
             response_time = time.time() - start_time
@@ -127,21 +127,21 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             
             # Handle evaluation
             evaluation_result = None
-            if query.evaluate and os.getenv("OPENAI_API_KEY"):
+            # if query.evaluate and os.getenv("OPENAI_API_KEY"):
          
                 
-                background_tasks.add_task(
-                    run_ragas_evaluation, 
-                    query.query, 
-                    str(response), 
-                    [], 
-                    query.reference_answer
-                )
+            #     background_tasks.add_task(
+            #         run_ragas_evaluation, 
+            #         query.query, 
+            #         str(response), 
+            #         [], 
+            #         query.reference_answer
+            #     )
                 
-                evaluation_result = {
-                    "status": "evaluating", 
-                    "message": "RAGAS evaluation running in background"
-                }
+            #     evaluation_result = {
+            #         "status": "evaluating", 
+            #         "message": "RAGAS evaluation running in background"
+            #     }
             
             return AgenticResponse(
                 response=str(response),
@@ -153,7 +153,7 @@ async def agentic_rag_endpoint(query: Query, background_tasks: BackgroundTasks):
             )
             
         except asyncio.TimeoutError:
-            raise HTTPException(status_code=504, detail="Agentic RAG request timed out after 180 seconds")
+            raise HTTPException(status_code=504, detail=f"Agentic RAG request timed out after {agentic_ai_timeout} seconds")
         except Exception as e:
             error_details = f"Agentic RAG processing failed: {str(e)}"
             print(f"Agentic RAG Error: {error_details}")

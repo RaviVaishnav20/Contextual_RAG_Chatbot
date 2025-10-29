@@ -20,6 +20,7 @@ def initialize_tracing():
             tracer_provider = register(
                 project_name=project_name,
                 endpoint=endpoint,
+                auto_instrument=True
             )
             LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
             tracer = trace.get_tracer(__name__)
@@ -28,6 +29,34 @@ def initialize_tracing():
             print(f"Failed to initialize tracing: {e}")
             return False
     return True
+
+# def initialize_tracing():
+#     """Initialize tracing components lazily"""
+#     global tracer_provider, tracer
+#     if tracer_provider is None:
+#         try:
+#             cm = ConfigManager()
+#             phoenix_cfg = cm.get_phoenix_config() or {}
+#             project_name = phoenix_cfg.get('tracing', {}).get('project_name', 'contextual_rag_chatbot')
+#             endpoint = phoenix_cfg.get('tracing', {}).get('trace_endpoint', 'http://localhost:6006/v1/traces')
+            
+#             # Avoid re-registering if already set
+#             if trace.get_tracer_provider().__class__.__name__ != "ProxyTracerProvider":
+#                 return True  
+
+#             tracer_provider = register(
+#                 project_name=project_name,
+#                 endpoint=endpoint,
+#                 auto_instrument=True,
+#                 set_global_tracer_provider=True
+#             )
+#             LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
+#             tracer = trace.get_tracer(__name__)
+#             return True
+#         except Exception as e:
+#             print(f"Failed to initialize tracing: {e}")
+#             return False
+#     return True
 
 @contextmanager
 def conditional_span(span_name: str, enable_tracing: bool = False, **attributes):

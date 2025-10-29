@@ -23,11 +23,11 @@ async def get_rag_answer(query: str) -> RagAnswer:
     candidates = await retrieve_step(query)
     ranked_context = await rerank_step(query, candidates)
     results = await answer(ranked_context, query)
-    answer_text = results.answer
-    context = results.retrieved_contexts
-    sources = results.sources
-    # Save to CSV
-    save_rag_response(query, answer_text, "\n\n".join(context), "\n\n".join(sources))
+    # answer_text = results.answer
+    # context = results.retrieved_contexts
+    # sources = results.sources
+    # # Save to CSV
+    # save_rag_response(query, answer_text, "\n\n".join(context), "\n\n".join(sources))
     return results
 
 async def get_relevant_chunks_with_reranking(query: str) -> List[RerankedOutput]:

@@ -110,5 +110,22 @@ class ConfigManager:
 
     # def get_directories(self) -> Dict[str, str]:
     #     return self.config.get("directories", {})
+    def load_yaml(self, path: str | Path) -> Dict[str, Any]:
+        """
+        Load a YAML file from a given path with environment variable substitution.
+        Returns an empty dict if the file does not exist or is invalid.
+        """
+        path = Path(path)
+        if not path.exists():
+            print(f"⚠️ Config file not found: {path}")
+            return {}
+        try:
+            with open(path, "r") as f:
+                content = f.read()
+                content = self._substitute_env_vars(content)
+                return yaml.safe_load(content) or {}
+        except Exception as e:
+            print(f"⚠️ Failed to load YAML config {path}: {e}")
+            return {}
 
 

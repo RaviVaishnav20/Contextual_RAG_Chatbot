@@ -164,7 +164,7 @@ async def check_rag_pipeline_health() -> HealthStatus:
                 status="healthy",
                 details={
                     "test_query": test_query,
-                    "answer": result[0]
+                    "answer": result
                 },
                 response_time=response_time
             )

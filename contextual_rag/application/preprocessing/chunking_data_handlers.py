@@ -5,7 +5,7 @@ from typing import Iterable,List
 import json
 import os
 import signal
-from contextual_rag.infrastructure.llm import generate_content
+from contextual_rag.application.networks.llm import generate_content
 from contextual_rag.infrastructure.config_manager import ConfigManager
 from contextual_rag.settings import settings
 from tqdm import tqdm

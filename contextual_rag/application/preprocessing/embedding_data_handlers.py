@@ -13,7 +13,7 @@ from llama_index.vector_stores.postgres import PGVectorStore
 
 from contextual_rag.settings import settings
 from contextual_rag.application.preprocessing.chunking_data_handlers import Chunk
-from contextual_rag.infrastructure.llm import get_embedding_batch
+from contextual_rag.application.networks.llm import get_embedding_batch
 from contextual_rag.infrastructure.config_manager import ConfigManager
 
 from llama_index.core.embeddings import BaseEmbedding
